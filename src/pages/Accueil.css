@@ -1,0 +1,248 @@
+/* ===== HERO SECTION ===== */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;                /* Permet le scroll vers le bas */
+  background-image: url('https://www.cc-vsa.com/medias/2022/02/AdobeStock_2375050011-2000x1333.jpeg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;      /* Contenu aligné à gauche */
+  color: white;
+  padding: 2rem;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(245, 124, 0, 0.4); /* Overlay orange */
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin-left: 5%;                  /* Espacement par rapport au bord */
+  text-align: left;
+}
+
+.hero-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  backdrop-filter: blur(4px);
+  display: inline-block;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 0.9rem 2.2rem;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.25s;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #f57c00;
+  color: white;
+  border-color: #f57c00;
+  box-shadow: 0 8px 16px rgba(245, 124, 0, 0.3);
+}
+
+.btn-primary:hover {
+  background: #e06d00;
+  border-color: #e06d00;
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px rgba(245, 124, 0, 0.4);
+}
+
+.btn-outline {
+  border: 2px solid white;
+  color: #000000;
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: white;
+  color: #f57c00;
+  transform: scale(1.05);
+}
+
+/* ===== SECTION CHOIX (parcours) ===== */
+.choix-section {
+  max-width: 1200px;
+  margin: 5rem auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.choix-titre {
+  font-size: 2.5rem;
+  color: #0f0700;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+}
+
+.choix-sous-titre {
+  font-size: 1.2rem;
+  color: #6b7a8f;
+  margin-bottom: 3rem;
+  font-weight: 400;
+}
+
+.choix-cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.carte {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem 1.8rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  border: 1px solid #eef2f6;
+  display: flex;
+  flex-direction: column;
+}
+
+.carte:hover {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.04);
+  border-color: #d4dce6;
+}
+
+.carte h3 {
+  font-size: 1.8rem;
+  color: #0f0700;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+.carte p {
+  color: #5a6b7a;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  font-size: 1rem;
+  font-weight: 300;
+  flex-grow: 1;
+}
+
+.carte-btn {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid #0f0700;
+  color: #0f0700;
+  padding: 0.7rem 1.8rem;
+  border-radius: 40px;
+  font-weight: 400;
+  text-decoration: none;
+  transition: all 0.2s;
+  align-self: center;
+  margin-top: auto;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+.carte-btn:hover {
+  background: #0f0700;
+  color: white;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero-content {
+    margin-left: 2%;
+    max-width: 90%;
+  }
+  .hero-title {
+    font-size: 1.6rem;
+  }
+  .hero-subtitle {
+    font-size: 2rem;
+  }
+  .hero-description {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+  }
+  .hero-buttons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .choix-titre {
+    font-size: 2rem;
+  }
+  .carte {
+    padding: 2rem 1.2rem;
+  }
+  .carte h3 {
+    font-size: 1.6rem;
+  }
+}
+.carte-icon {
+  font-size: 3rem;      /* Taille des icônes */
+  color: #0f0700;       /* Orange, comme tes boutons */
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+/* Effet de survol sur les cartes */
+.carte {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.carte:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 30px rgba(245, 124, 0, 0.15);
+  border-color: #f57c00;
+}
+
+/* Effet supplémentaire sur l'icône (optionnel) */
+.carte:hover .carte-icon {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+.carte:hover .carte-btn {
+  background: #f57c00;
+  color: white;
+}

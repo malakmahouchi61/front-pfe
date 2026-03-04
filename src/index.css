@@ -1,0 +1,21 @@
+:root {
+  --primary: #2563eb;
+  --primary-light: #dbafea;
+  --primary-dark: #1e40af;
+  --accent: #3b82f6;
+  --bg-page: #eff6ff;
+  --text-dark: #1f2937;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
+  line-height: 1.5;
+  margin: 0;
+  
+}
+html, body, #root {
+  height: auto;
+  overflow: auto !important;
+}

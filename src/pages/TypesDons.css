@@ -1,0 +1,63 @@
+/* TypesDons.css */
+.types-dons-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.types-dons {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.types-dons h2 {
+  font-size: 2rem;
+  color: #2b2b2b;
+  margin-bottom: 0.5rem;
+}
+
+.types-dons .sous-titre {
+  font-size: 1.4rem;
+  color: #f57c00;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.types-dons .description {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2.5rem;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #ffe6cc;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(245, 124, 0, 0.15);
+}
+
+.card h3 {
+  color: #f57c00;
+  margin-bottom: 0.75rem;
+  font-size: 1.3rem;
+}
+
+.card p {
+  color: #555;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
