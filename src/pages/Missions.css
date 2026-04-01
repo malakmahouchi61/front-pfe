@@ -1,0 +1,558 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap');
+
+.missions-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  font-family: 'Inter', sans-serif;
+  background: #f9fafb;
+  min-height: calc(100vh - 80px);
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* En-tête avec recherche et filtres */
+.missions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Barre de recherche */
+.search-wrapper {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: white;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+}
+
+/* Filtres */
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 30px;  /* pastilles rondes pour les filtres */
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.filter-tab.active {
+  background: #f97316;
+  border-color: #f97316;
+  color: white;
+}
+
+.filter-tab.active .filter-icon {
+  color: white;
+}
+
+.filter-icon {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+/* Résultats */
+.results-count {
+  text-align: right;
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+/* Grille des missions */
+.missions-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Carte mission */
+.mission-card {
+  background: white;
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  border: 1px solid #edf2f7;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.mission-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+}
+
+/* En-tête de carte */
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.mission-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.urgence-badge {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* Localisation */
+.mission-location {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.location-icon {
+  color: #f97316;
+  font-size: 0.9rem;
+}
+
+/* Description */
+.mission-description {
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  flex: 1;
+}
+
+/* Lire la suite */
+.read-more-btn {
+  background: none;
+  border: none;
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  transition: color 0.2s;
+}
+
+.read-more-btn:hover {
+  color: #e06d00;
+  text-decoration: underline;
+}
+
+/* Métadonnées (type et statut) */
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Couleurs harmonisées pour les types */
+.type-badge.kafala {
+  background: #fef3c7;
+  color: #b91c1c;
+}
+.type-badge.financier {
+  background: #fef3c7;
+  color:#b91c1c;
+}
+.type-badge.materiel {
+  background: #fef3c7;
+  color: #b91c1c;
+}
+.type-badge.competences {
+  background: #fef3c7;
+  color: #b91c1c;
+}
+.type-badge.collectif {
+  background: #fef3c7;
+  color: #b91c1c;
+}
+
+/* Statut validé */
+.statut-badge {
+  background: #22c55e;
+  color: white;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Progression */
+.progress-section {
+  margin-bottom: 1rem;
+}
+
+.progress-numbers {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.collected {
+  color: #f97316;
+}
+
+.goal {
+  color: #94a3b8;
+}
+
+progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+  background-color: #e2e8f0;
+  border-radius: 20px;
+}
+
+progress::-webkit-progress-value {
+  background-color: #f97316;
+  border-radius: 20px;
+}
+
+/* Statistiques */
+.stats-row {
+  display: flex;
+  gap: 1rem;
+  color: #64748b;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.stats-row span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Bouton participer - carré avec coins légèrement arrondis comme connexion */
+.btn-participer {
+  width: 100%;
+  padding: 0.8rem;
+  background: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;   /* coins légèrement arrondis, comme connexion */
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.3);
+  margin-top: auto;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-participer:hover {
+  background: #e06d00;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(249, 115, 22, 0.4);
+}
+
+/* Aucune mission */
+.no-missions {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+  font-size: 1rem;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  grid-column: 1 / -1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .missions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-tabs {
+    justify-content: center;
+  }
+  
+  .missions-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-tab {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .filter-icon {
+    font-size: 0.8rem;
+  }
+}
+/* Badge de type - Tous identiques */
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 1rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: #f1f5f9;  /* gris très clair */
+  color: #334155;        /* gris foncé */
+}
+/* Anciennes règles à supprimer
+.type-badge.kafala {
+  background: #ffe4e6;
+  color: #b91c1c;
+}
+.type-badge.financier {
+  background: #dcfce7;
+  color: #166534;
+}
+.type-badge.materiel {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.type-badge.competences {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+.type-badge.collectif {
+  background: #fed7aa;
+  color: #92400e;
+}
+*/
+
+/* Nouvelle règle unique pour tous les types */
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 1rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: #ffe4e6;
+  color: #b91c1c;
+}
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;        /* réduit si icône présente */
+  padding: 0.2rem 0.6rem;  /* moins d'espace */
+  border-radius: 8px;
+  font-size: 0.6rem;      /* texte plus petit */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: #ffe4e6;
+  color: #b91c1c;
+}
+/* Style plus moderne des cartes */
+.mission-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mission-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+}
+
+/* Badges plus élégants */
+.type-badge {
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  border: none;
+  font-weight: 500;
+  padding: 0.25rem 0.8rem;
+  border-radius: 30px;
+}
+
+.type-badge.financier {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  color: #2e7d32;
+}
+/* etc... */
+/* Mission card – uniform style */
+.mission-card {
+  background: white;
+  border-radius: var(--radius, 1.5rem);
+  overflow: hidden;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0,0,0,0.1));
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mission-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0,0,0,0.1));
+}
+
+/* Image section – fixed height for consistency */
+.mission-image-wrapper {
+  width: 100%;
+  height: 200px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mission-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* fill the area, may crop */
+  transition: transform 0.3s;
+}
+
+.mission-card:hover .mission-image {
+  transform: scale(1.02);
+}
+
+/* Placeholder for missing images */
+.mission-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  text-align: center;
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: #bbb;
+}
+
+.placeholder-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #888;
+}
+
+/* Content area inside card */
+.mission-card-content {
+  padding: 1rem 1.2rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure the button stays at bottom */
+.btn-participer {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+/* Adjust existing progress bar if needed */
+.progress-section {
+  margin: 0.8rem 0;
+}

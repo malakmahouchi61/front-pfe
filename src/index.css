@@ -19,3 +19,62 @@ html, body, #root {
   height: auto;
   overflow: auto !important;
 }
+/* ===== Thème clair (par défaut) ===== */
+:root {
+  --bg-color: #f8fafc;
+  --text-color: #333;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --primary: #f57c10;
+  --primary-dark: #e06d00;
+  --gray-light: #f0f4f8;
+  --gray-dark: #2d3e50;
+  --navbar-bg: #ffffff;
+  --nav-link-color: #444;
+  --greeting-color: #333;
+}
+
+/* ===== Thème sombre ===== */
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #f0f0f0;
+  --card-bg: #2d2d2d;
+  --border-color: #444;
+  --primary: #ff9800;
+  --primary-dark: #e68900;
+  --gray-light: #3a3a3a;
+  --gray-dark: #cccccc;
+  --navbar-bg: #2d2d2d;
+  --nav-link-color: #f0f0f0;
+  --greeting-color: #f0f0f0;
+}
+
+/* ===== Application globale ===== */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Adaptations pour la navbar ===== */
+.navbar {
+  background-color: var(--navbar-bg) !important;
+  border-bottom-color: var(--primary) !important;
+}
+
+.nav-link {
+  color: var(--nav-link-color) !important;
+}
+
+.nav-greeting {
+  color: var(--greeting-color) !important;
+}
+
+.theme-toggle {
+  color: var(--nav-link-color) !important;
+}
+
+/* Les autres composants devront progressivement utiliser les variables */

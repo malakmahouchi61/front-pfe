@@ -1,18 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaImage } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './DemandeAide.css';
 
 const DemandeAide = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/connexion', { state: { from: '/demander-aide' } });
-    }
-  }, [user, navigate]);
+  const fileInputRef = useRef(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const [formData, setFormData] = useState({
     type: 'kafala',
@@ -20,8 +16,13 @@ const DemandeAide = () => {
     description: '',
     localisation: '',
     urgence: 'normale',
-    pieces: null
+    objectif: '',
+    dateFin: '',
+    besoinMateriel: '',
+    fichier: null
   });
+
+  const [kafalaAvecObjectif, setKafalaAvecObjectif] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,112 +30,287 @@ const DemandeAide = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, pieces: e.target.files[0] });
+    const file = e.target.files[0];
+    setFormData({ ...formData, fichier: file });
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview(null);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleParcourirClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Soumission:', formData);
-    alert('✅ Demande envoyée avec succès ! Nous reviendrons vers vous rapidement.');
-    navigate('/');
-  };
 
-  if (!user) return null;
+    if (!user) {
+      alert('Utilisateur non connecté');
+      return;
+    }
+
+    // Validation
+    if (formData.type === 'financier' && !formData.objectif) {
+      alert('Veuillez saisir un objectif financier.');
+      return;
+    }
+    if (formData.type === 'kafala' && kafalaAvecObjectif && !formData.objectif) {
+      alert('Veuillez saisir un objectif financier pour cette demande.');
+      return;
+    }
+    if (formData.type !== 'financier' && !kafalaAvecObjectif && !formData.besoinMateriel) {
+      alert('Veuillez décrire le besoin.');
+      return;
+    }
+    if (!formData.dateFin) {
+      alert('Veuillez saisir une date de fin.');
+      return;
+    }
+
+    // Construction de la description complète
+    let fullDescription = `${formData.titre}\n\n${formData.description}\n\nLocalisation: ${formData.localisation}\nUrgence: ${formData.urgence}\nDate fin: ${formData.dateFin}`;
+    if (formData.type === 'financier') {
+      fullDescription += `\nObjectif: ${formData.objectif} €`;
+    } else if (formData.type === 'kafala') {
+      if (kafalaAvecObjectif) {
+        fullDescription += `\nObjectif: ${formData.objectif} €`;
+      }
+      fullDescription += `\nBesoin: ${formData.besoinMateriel}`;
+    } else {
+      fullDescription += `\nBesoin: ${formData.besoinMateriel}`;
+    }
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('id_beneficiaire', user.id_utilisateur); // ← correction
+    formDataToSend.append('type_demande', formData.type);
+    formDataToSend.append('description', fullDescription);
+    formDataToSend.append('objectif', formData.objectif || 0);
+    formDataToSend.append('date_fin', formData.dateFin);
+
+    if (formData.fichier) {
+      formDataToSend.append('piece_justificative', formData.fichier);
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/demandes', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert('✅ Demande envoyée avec succès ! Elle sera examinée par l\'équipe.');
+        navigate('/');
+      } else {
+        alert('Erreur : ' + result.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Problème de connexion au serveur.');
+    }
+  };
 
   return (
-    <div className="demande-page">
-      <div className="demande-card">
-        <Link to="/" className="retour-lien">
+    <div className="demande-page-simple">
+      <div className="container-simple">
+        <Link to="/" className="back-link">
           <FaArrowLeft /> Retour
         </Link>
 
-        <h1> Demander de l'aide</h1>
-        <p className="soustitre">
-          Remplissez ce formulaire pour soumettre votre besoin. 
-          L'équipe Sanad l'étudiera et le publiera s'il correspond à nos critères.
-        </p>
+        <div className="form-card">
+          <h1>Demander de l'aide</h1>
+          <p className="subtitle">
+            Remplissez ce formulaire pour soumettre votre besoin. L'équipe Sanad l'étudiera et le publiera s'il correspond à nos critères.
+          </p>
 
-        <form onSubmit={handleSubmit} className="demande-form">
-          <div className="form-group">
-            <label htmlFor="type">Type d'aide recherché *</label>
-            <select id="type" name="type" value={formData.type} onChange={handleChange} required>
-              <option value="kafala">Kafala (parrainage d'enfant ou famille)</option>
-              <option value="financier">Aide financière</option>
-              <option value="materiel">Aide matérielle (vêtements, nourriture...)</option>
-              <option value="competences">Compétences / Bénévolat</option>
-              <option value="collectif">Projet collectif</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="titre">Titre de la demande *</label>
-            <input
-              type="text"
-              id="titre"
-              name="titre"
-              value={formData.titre}
-              onChange={handleChange}
-              placeholder="Ex: Aide pour scolariser mes enfants"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="description">Description détaillée *</label>
-            <textarea
-              id="description"
-              name="description"
-              rows="5"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Décrivez votre situation, vos besoins, le nombre de personnes concernées..."
-              required
-            />
-          </div>
-
-          <div className="form-row">
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
+            {/* Type d'aide */}
             <div className="form-group">
-              <label htmlFor="localisation">Localisation *</label>
+              <label>Type d'aide recherché *</label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={(e) => {
+                  setFormData({ ...formData, type: e.target.value });
+                  setKafalaAvecObjectif(false);
+                }}
+                required
+              >
+                <option value="kafala">Kafala (parrainage)</option>
+                <option value="financier">Aide financière</option>
+                <option value="materiel">Aide matérielle</option>
+                <option value="competences">Compétences / Bénévolat</option>
+                <option value="collectif">Projet collectif</option>
+              </select>
+            </div>
+
+            {/* Titre */}
+            <div className="form-group">
+              <label>Titre de la demande *</label>
               <input
                 type="text"
-                id="localisation"
-                name="localisation"
-                value={formData.localisation}
+                name="titre"
+                value={formData.titre}
                 onChange={handleChange}
-                placeholder="Ville, région"
+                placeholder="Ex: Aide pour scolariser mes enfants"
                 required
               />
             </div>
 
+            {/* Description détaillée */}
             <div className="form-group">
-              <label htmlFor="urgence">Niveau d'urgence</label>
-              <select id="urgence" name="urgence" value={formData.urgence} onChange={handleChange}>
-                <option value="normale">Normale</option>
-                <option value="urgente">Urgente</option>
-                <option value="critique">Critique</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="pieces">Pièces justificatives (optionnel)</label>
-            <div className="file-input-wrapper">
-              <input
-                type="file"
-                id="pieces"
-                name="pieces"
-                onChange={handleFileChange}
-                accept=".pdf,.jpg,.jpeg,.png"
+              <label>Description détaillée *</label>
+              <textarea
+                name="description"
+                rows="4"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Décrivez votre situation, vos besoins, le nombre de personnes concernées..."
+                required
               />
-              <span className="file-name">{formData.pieces ? formData.pieces.name : 'Aucun fichier choisi'}</span>
             </div>
-            <small>Formats acceptés : PDF, JPG, PNG (max 5 Mo)</small>
-          </div>
 
-          <div className="form-actions">
+            {/* Localisation & Urgence */}
+            <div className="form-row">
+              <div className="form-group">
+                <label>Localisation *</label>
+                <input
+                  type="text"
+                  name="localisation"
+                  value={formData.localisation}
+                  onChange={handleChange}
+                  placeholder="Ville, région"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Niveau d'urgence</label>
+                <select name="urgence" value={formData.urgence} onChange={handleChange}>
+                  <option value="normale">Normale</option>
+                  <option value="urgente">Urgente</option>
+                  <option value="critique">Critique</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Date de fin */}
+            <div className="form-group">
+              <label>Date de fin de la demande *</label>
+              <input
+                type="date"
+                name="dateFin"
+                value={formData.dateFin}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* Cas financier pur */}
+            {formData.type === 'financier' && (
+              <div className="form-group">
+                <label>Objectif financier (€) *</label>
+                <input
+                  type="number"
+                  name="objectif"
+                  value={formData.objectif}
+                  onChange={handleChange}
+                  min="1"
+                  step="0.01"
+                  required
+                />
+              </div>
+            )}
+
+            {/* Cas Kafala */}
+            {formData.type === 'kafala' && (
+              <>
+                <div className="checkbox-group">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={kafalaAvecObjectif}
+                      onChange={(e) => setKafalaAvecObjectif(e.target.checked)}
+                    />
+                    Cette demande a un objectif financier
+                  </label>
+                </div>
+
+                {kafalaAvecObjectif && (
+                  <div className="form-group">
+                    <label>Objectif financier (€) *</label>
+                    <input
+                      type="number"
+                      name="objectif"
+                      value={formData.objectif}
+                      onChange={handleChange}
+                      min="1"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label>{kafalaAvecObjectif ? 'Description du besoin (optionnelle)' : 'Description du besoin *'}</label>
+                  <textarea
+                    name="besoinMateriel"
+                    rows="3"
+                    value={formData.besoinMateriel}
+                    onChange={handleChange}
+                    placeholder="Décrivez le contexte, le nombre d'enfants, les conditions..."
+                    required={!kafalaAvecObjectif}
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Autres types */}
+            {formData.type && formData.type !== 'financier' && formData.type !== 'kafala' && (
+              <div className="form-group">
+                <label>Description du besoin *</label>
+                <textarea
+                  name="besoinMateriel"
+                  rows="3"
+                  value={formData.besoinMateriel}
+                  onChange={handleChange}
+                  placeholder="Décrivez précisément ce dont vous avez besoin..."
+                  required
+                />
+              </div>
+            )}
+
+           {/* Upload de fichier */}
+<div className="form-group">
+  <label>Pièces justificatives (optionnel)</label>
+  <div className="file-upload">
+    <input
+      type="file"
+      ref={fileInputRef}
+      onChange={handleFileChange}
+      accept="image/*, .pdf"   // ← modification ici
+      id="file-input"
+    />
+    <button type="button" onClick={handleParcourirClick} className="btn-outline">
+      <FaImage /> Choisir un fichier
+    </button>
+    <span className="file-name">
+      {formData.fichier ? formData.fichier.name : 'Aucun fichier choisi'}
+    </span>
+  </div>
+  {imagePreview && (
+    <div className="image-preview">
+      <img src={imagePreview} alt="Aperçu" />
+    </div>
+  )}
+  <small>Formats acceptés : images (tous formats) et PDF (max 5 Mo)</small>
+</div>
+
             <button type="submit" className="btn-submit">Envoyer la demande</button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

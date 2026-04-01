@@ -32,10 +32,11 @@
 }
 
 .hero-title {
-  font-size: 2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  
 }
 
 .hero-subtitle {

@@ -1,4 +1,4 @@
-/* ===== RESET & GLOBAL ===== */
+/* ===== Base ===== */
 * {
   margin: 0;
   padding: 0;
@@ -6,262 +6,442 @@
 }
 
 body {
-  font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-  background: linear-gradient(145deg, #fef8f0 0%, #fff6e9 100%);
-  overflow: hidden;           /* PAS DE SCROLL SUR LA PAGE */
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f8fafc;
+  min-height: 100vh;
 }
 
-/* ===== CONTENEUR PRINCIPAL (tient compte de la navbar) ===== */
 .inscription-wrapper {
-  flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 1rem;
-  height: calc(100vh - 70px); /* Ajustez 70px à la hauteur réelle de votre navbar */
-  margin-top: 0;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-/* ===== CARTE INSCRIPTION ===== */
+/* ===== Carte sans bordure orange ===== */
 .inscription-card {
-  background: #ffffff;
+  background: white;
   border-radius: 32px;
-  box-shadow: 0 20px 40px rgba(245, 124, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.05);
-  padding: 1.8rem 2rem 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem;
   width: 100%;
   max-width: 500px;
-  border: 1px solid #ffe6cc;
-  max-height: 100%;
-  display: flex;
-  flex-direction: column;
-  
-  /* Activation du scroll si nécessaire */
-  overflow-y: auto;
-  
-  /* Masquer la scrollbar (invisible mais fonctionnelle) */
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* Internet Explorer / Edge */
+  animation: slideUp 0.4s ease;
 }
 
-/* Pour Chrome, Safari, Edge (WebKit) */
-.inscription-card::-webkit-scrollbar {
-  display: none;
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== TITRES ===== */
 .card-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #2b2b2b;
+  color: #f97316;
   text-align: center;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.25rem;
 }
 
 .card-subtitle {
   text-align: center;
-  color: #6f6f6f;
+  color: #5a6a7a;
   font-size: 0.95rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* ===== SECTION RÔLE ===== */
+/* ===== Avatar ===== */
+.avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.avatar-circle-large {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #f0f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.avatar-circle-large.has-photo {
+  cursor: pointer;
+}
+
+.avatar-icon-large {
+  font-size: 4rem;
+  color: #8a9aa8;
+}
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-badge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #2d3e50;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background 0.2s;
+  cursor: pointer;
+  z-index: 2;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.camera-badge:hover {
+  background: #1f2b36;
+  transform: scale(1.1);
+}
+
+.avatar-upload-text {
+  font-size: 0.95rem;
+  color: #2d3e50;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ===== Zoom modal (comme profil) ===== */
+.zoom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s;
+}
+
+.zoom-modal {
+  position: relative;
+  width: 250px;
+  height: 250px;
+}
+
+.zoom-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 5px solid white;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.zoom-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.delete-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #2d3e50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 2px solid white;
+}
+
+.delete-btn:hover {
+  background: #1f2b36;
+}
+
+.close-btn {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  background: #2d3e50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 2px solid white;
+}
+
+.close-btn:hover {
+  background: #1f2b36;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===== Rôles ===== */
 .role-section {
-  margin-bottom: 1.2rem;
+  margin-bottom: 2rem;
 }
 
 .role-label {
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #4a4a4a;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
   display: block;
-  margin-bottom: 0.6rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  color: #5a6a7a;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
 }
 
 .role-options {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.75rem;
 }
 
 .role-option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.7rem 1rem;
-  border: 2px solid #f0e4d5;
-  border-radius: 18px;
-  background-color: #fffcf8;
+  padding: 1rem 1.2rem;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .role-option:hover {
-  border-color: #f57c00;
-  background-color: #fff6e9;
+  border-color: #94a3b8;
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
 .role-option.selected {
-  border-color: #f57c00;
-  background-color: #fff1e0;
-  box-shadow: 0 4px 12px rgba(245, 124, 0, 0.15);
+  border-color: #2d3e50;
+  background: #edf2f7;
+  box-shadow: 0 5px 15px rgba(45, 62, 80, 0.15);
 }
 
 .role-content {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
 }
 
 .role-title {
-  font-weight: 700;
-  color: #2b2b2b;
-  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  font-weight: 600;
+  color: #1a1e2b;
+  font-size: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.2rem;
 }
 
-.role-emoji {
-  font-size: 1.2rem;
+.role-icon {
+  font-size: 1.3rem;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+.role-option.selected .role-icon {
+  color: #2d3e50;
 }
 
 .role-desc {
-  font-size: 0.8rem;
-  color: #6f6f6f;
+  font-size: 0.85rem;
+  color: #5a6a7a;
+  margin-left: 2rem;
 }
 
-.role-check {
-  font-size: 1.2rem;
-  color: #f57c00;
+.custom-radio {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #cbd5e0;
+  border-radius: 50%;
+  display: inline-block;
+  transition: all 0.2s;
 }
 
-/* ===== FORMULAIRE ===== */
+.custom-radio.selected {
+  border-color: #2d3e50;
+  background-color: #2d3e50;
+  box-shadow: inset 0 0 0 3px white;
+}
+
+/* ===== Formulaire ===== */
 .inscription-form {
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .form-group label {
+  display: block;
   font-weight: 600;
   font-size: 0.8rem;
-  color: #4a4a4a;
+  color: #5a6a7a;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  display: block;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.7rem 1.2rem;
-  border: 2px solid #f0e4d5;
-  border-radius: 60px;
-  font-size: 0.9rem;
-  background-color: #fffcf8;
+  padding: 0.9rem 1.2rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  background: white;
   transition: all 0.2s;
   outline: none;
-  color: #333;
+  color: #1a1e2b;
 }
 
 .form-group input:focus {
-  border-color: #f57c00;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.15);
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
 }
 
 .form-group input::placeholder {
-  color: #bfb7af;
-  font-weight: 300;
+  color: #a0b3c6;
 }
 
-/* ===== BOUTON ===== */
+/* ===== Bouton orange ===== */
 .btn-inscription {
   width: 100%;
-  background: #f57c00;
+  background: #f97316;
   color: white;
   border: none;
-  /* padding: 0.8rem 1.5rem; */
-  border-radius: 60px;
+  border-radius: 40px;
+  padding: 1rem;
+  font-weight: 600;
   font-size: 1rem;
-  font-weight: 700;
   cursor: pointer;
-  transition: all 0.25s;
-  border: 2px solid #f57c00;
-  box-shadow: 0 8px 16px rgba(245, 124, 0, 0.25);
-  /* margin: 0.8rem 0 0.8rem; */
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
+  margin-top: 1rem;
 }
 
 .btn-inscription:hover {
-  background: #e06d00;
-  border-color: #e06d00;
-  transform: scale(1.02);
-  box-shadow: 0 12px 24px rgba(245, 124, 0, 0.35);
+  background: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(249, 115, 22, 0.4);
 }
 
-/* ===== LIENS ===== */
+.btn-inscription:disabled {
+  background: #a0b3c6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ===== Liens ===== */
 .connexion-lien {
   text-align: center;
-  margin: 0.3rem 0 0.5rem;
-  color: #5f5f5f;
+  margin: 1rem 0 0.5rem;
+  color: #5a6a7a;
   font-size: 0.9rem;
 }
 
 .connexion-lien a {
-  color: #f57c00;
-  font-weight: 700;
+  color: #f97316;
+  font-weight: 600;
   text-decoration: none;
   border-bottom: 2px solid transparent;
   transition: border-color 0.2s;
 }
 
 .connexion-lien a:hover {
-  border-bottom-color: #f57c00;
+  border-bottom-color: #f97316;
+  text-decoration: none;
 }
 
 .retour-accueil {
   display: inline-block;
   text-align: center;
   width: 100%;
-  color: #a1a1a1;
+  color: #8a9aa8;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 500;
-  padding: 0.4rem 0 0.1rem;
+  padding: 0.5rem 0 0.2rem;
   transition: color 0.2s;
-  border-top: 1px dashed #ffe1c6;
+  border-top: 1px dashed #fed7aa;
 }
 
 .retour-accueil:hover {
-  color: #f57c00;
-}
-/* Conteneur du cercle */
-.role-check {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
+  color: #f97316;
 }
 
-.custom-radio {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #ccc;          /* bordure grise pour l'état non sélectionné */
-  border-radius: 50%;
-  background-color: transparent;
-  transition: all 0.2s ease;
+.error-message {
+  color: #e53e3e;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
 }
 
-.custom-radio.selected {
-  border-color: #ff8c00;            /* orange */
-  background-color: #ff8c00;        /* fond orange */
-  box-shadow: inset 0 0 0 3px white; /* petit point blanc au centre */
+/* Responsive */
+@media (max-width: 480px) {
+  .zoom-modal {
+    width: 200px;
+    height: 200px;
+  }
+  .close-btn {
+    top: -40px;
+    right: -20px;
+  }
+}
+.btn-inscription {
+  width: 100%;
+  background: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;   /* ← coins légèrement arrondis, au lieu de 40px */
+  padding: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
+  margin-top: 1rem;
 }

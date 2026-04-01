@@ -1,86 +1,71 @@
-// Connexion.jsx
-import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import "./Connexion.css";
+import axios from 'axios';
+import './Connexion.css';
 
 const Connexion = () => {
+  const [email, setEmail] = useState('');
+  const [motDePasse, setMotDePasse] = useState('');
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from || "/accueil";
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const from = location.state?.from || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, mot_de_passe: password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Email ou mot de passe incorrect");
-      }
-
-      // Succès
-      localStorage.setItem('token', data.token);
-      login(data.user);
+      const response = await axios.post('/api/login', { email, mot_de_passe: motDePasse });
+      const { token, user } = response.data;
+      login(token, user);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.error || 'Erreur de connexion');
     }
   };
 
   return (
-    <div className="connexion-wrapper">
+    <div className="connexion-container">
       <div className="connexion-card">
-        <h1>Bon retour</h1>
-        <p>Connectez-vous à votre compte</p>
+        <h2>Connexion</h2>
+        <p className="subtitle">Accédez à votre espace personnel</p>
 
-        <form onSubmit={handleSubmit} className="connexion-form">
+        {error && <div className="error-message">{error}</div>}
+
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label>EMAIL</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="votre@email.com"
               required
             />
           </div>
+
           <div className="form-group">
-            <label>Mot de passe</label>
+            <label>MOT DE PASSE</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={motDePasse}
+              onChange={(e) => setMotDePasse(e.target.value)}
+              placeholder="••••••••"
               required
             />
           </div>
-          <button type="submit" className="btn-connexion" disabled={loading}>
-            {loading ? 'Connexion...' : 'Se connecter'}
+
+          <button type="submit" className="btn-connexion">
+            Se connecter
           </button>
-          {error && <div className="error-message" style={{ color: 'red', marginTop: '1rem' }}>{error}</div>}
         </form>
 
-        <p className="inscription-lien">
-          Pas encore de compte ? <Link to="/inscription">S'inscrire</Link>
+        <p className="inscription-link">
+          Pas encore de compte ? <Link to="/inscription">Inscrivez-vous</Link>
         </p>
-        <Link to="/accueil" className="retour-accueil">
-          ← Retour à l'accueil
-        </Link>
       </div>
     </div>
   );

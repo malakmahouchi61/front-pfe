@@ -1,57 +1,99 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom'; // Remplace Link par NavLink pour les liens du menu
+import { Link, NavLink } from 'react-router-dom';
+import { FaUserCircle, FaSun, FaMoon } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import NotificationBell from './NotificationBell';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { darkMode, toggleTheme } = useTheme();
+
+  const getDisplayName = () => {
+    if (!user) return '';
+    if (user.prenom && user.nom) return `${user.prenom} ${user.nom}`;
+    if (user.prenom) return user.prenom;
+    if (user.nom) return user.nom;
+    if (user.email) return user.email;
+    return 'Utilisateur';
+  };
+
+  const getAvatarUrl = () => {
+    if (!user?.avatar) return null;
+    const baseUrl = user.avatar.startsWith('http') ? user.avatar : `http://localhost:3000${user.avatar}`;
+    return `${baseUrl}?t=${Date.now()}`;
+  };
+
+  const isAdmin = user && (user.role?.toLowerCase() === 'admin');
 
   return (
     <nav className="navbar">
       <div className="nav-container">
-        {/* Logo à gauche */}
         <Link to="/" className="nav-logo">Sanad</Link>
 
-        {/* Liens centrés - utilisation de NavLink */}
         <ul className="nav-menu">
           <li>
-            <NavLink to="/" className="nav-link" end>Accueil</NavLink>
+            <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              Accueil
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/missions" className="nav-link">Missions</NavLink>
+            <NavLink to="/missions" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              Missions
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/campagnes" className="nav-link">Campagnes</NavLink>
+            <NavLink to="/campagnes" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              Campagnes
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/classement" className="nav-link">Classement</NavLink>
+            <NavLink to="/classement" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              Classement
+            </NavLink>
           </li>
-          {/* Lien Dashboard visible uniquement si connecté */}
-          {user && (
+          {isAdmin && (
             <li>
-              <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
+              <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                Dashboard
+              </NavLink>
             </li>
           )}
         </ul>
 
-        {/* Partie droite : on garde Link pour ces éléments */}
         <div className="nav-right">
+          <button onClick={toggleTheme} className="theme-toggle">
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </button>
+
+          {/* Notification Bell – affichée seulement si connecté */}
+          {user && <NotificationBell />}
+
           {user ? (
-            <>
-              <span className="nav-greeting">
-                Bonjour, {user.prenom || user.nom || 'Utilisateur'}
-              </span>
-              <button onClick={logout} className="nav-link btn-logout">
-                Déconnexion
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/connexion" className="nav-link">Connexion</Link>
-              <Link to="/inscription" className="nav-link btn-inscription">
-                S'inscrire
+            <div className="user-menu">
+              <Link to="/profil" className="profile-link">
+                <div className="avatar-small">
+                  {user.avatar ? (
+                    <img
+                      key={user.avatar}
+                      src={getAvatarUrl()}
+                      alt="Avatar"
+                      className="avatar-img"
+                    />
+                  ) : (
+                    <FaUserCircle className="avatar-icon-small" />
+                  )}
+                </div>
+                <span className="nav-greeting">{getDisplayName()}</span>
               </Link>
-            </>
+              <button onClick={logout} className="btn-orange">Déconnexion</button>
+            </div>
+          ) : (
+            <div className="auth-buttons">
+              <Link to="/connexion" className="btn-orange">Connexion</Link>
+              <Link to="/inscription" className="btn-orange btn-outline">Inscription</Link>
+            </div>
           )}
         </div>
       </div>
