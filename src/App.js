@@ -28,38 +28,28 @@ import DemandeDetail from "./pages/DemandeDetail";
 
 import "./App.css";
 
-/**
- * Composant interne qui a accès à useAuth()
- * → passe l'id utilisateur au SocketProvider pour créer
- *   le socket uniquement quand l'utilisateur est connecté.
- */
 const AppContent = () => {
   const { user } = useAuth();
-
-  // Récupère l'id peu importe la forme retournée par votre AuthContext
   const userId = user?.id_utilisateur ?? user?.id ?? null;
 
   return (
     <SocketProvider userId={userId}>
-      <NotificationProvider>
+      <NotificationProvider userId={userId}>
         <Router>
           <Navbar />
           <ToastContainer position="top-right" autoClose={5000} />
           <NotificationListener />
           <Routes>
-            {/* ── Pages publiques ──────────────────────────────── */}
-            <Route path="/"              element={<Accueil />} />
-            <Route path="/accueil"       element={<Accueil />} />
-            <Route path="/connexion"     element={<Connexion />} />
-            <Route path="/inscription"   element={<Inscriptions />} />
-            <Route path="/missions"      element={<Missions />} />
-            <Route path="/missions/:id"  element={<DemandeDetail />} />
-            <Route path="/campagnes"     element={<Campagnes />} />
+            <Route path="/" element={<Accueil />} />
+            <Route path="/accueil" element={<Accueil />} />
+            <Route path="/connexion" element={<Connexion />} />
+            <Route path="/inscription" element={<Inscriptions />} />
+            <Route path="/missions" element={<Missions />} />
+            <Route path="/missions/:id" element={<DemandeDetail />} />
+            <Route path="/campagnes" element={<Campagnes />} />
             <Route path="/campagnes/:id" element={<CampagnesDetail />} />
-            <Route path="/classement"    element={<Classement />} />
-            <Route path="/profil"        element={<Profil />} />
-
-            {/* ── Pages protégées ──────────────────────────────── */}
+            <Route path="/classement" element={<Classement />} />
+            <Route path="/profil" element={<Profil />} />
             <Route
               path="/demander-aide"
               element={
@@ -91,10 +81,6 @@ const AppContent = () => {
   );
 };
 
-/**
- * App racine : ThemeProvider et AuthProvider enveloppent tout.
- * AppContent est à l'intérieur pour pouvoir appeler useAuth().
- */
 function App() {
   return (
     <ThemeProvider>

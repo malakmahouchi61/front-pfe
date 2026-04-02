@@ -4,7 +4,7 @@ import { useNotifications } from "../context/NotificationContext";
 import "./NotificationBell.css";
 
 const NotificationBell = () => {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications, loading } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -19,9 +19,9 @@ const NotificationBell = () => {
   }, []);
 
   const handleBellClick = () => setIsOpen(!isOpen);
-  const handleNotificationClick = (id) => markAsRead(id);
 
   const formatTime = (timestamp) => {
+    if (!timestamp) return "";
     const diff = Math.floor((new Date() - new Date(timestamp)) / 1000);
     if (diff < 60) return "à l'instant";
     if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`;
@@ -53,14 +53,16 @@ const NotificationBell = () => {
             </div>
           </div>
           <div className="dropdown-list">
-            {notifications.length === 0 ? (
+            {loading && <div className="empty-state">Chargement...</div>}
+            {!loading && notifications.length === 0 && (
               <div className="empty-state">Aucune notification</div>
-            ) : (
+            )}
+            {!loading &&
               notifications.map((notif) => (
                 <div
                   key={notif.id}
                   className={`notification-item ${!notif.read ? "unread" : ""}`}
-                  onClick={() => handleNotificationClick(notif.id)}
+                  onClick={() => markAsRead(notif.id)}
                 >
                   <div className="notification-icon">{notif.icon || "🔔"}</div>
                   <div className="notification-content">
@@ -69,8 +71,7 @@ const NotificationBell = () => {
                     <div className="notification-time">{formatTime(notif.timestamp)}</div>
                   </div>
                 </div>
-              ))
-            )}
+              ))}
           </div>
         </div>
       )}

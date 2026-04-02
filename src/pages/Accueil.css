@@ -247,3 +247,11 @@
   background: #f57c00;
   color: white;
 }
+h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+    /* margin-bottom: 0.5rem; */
+    text-align: center;
+}
