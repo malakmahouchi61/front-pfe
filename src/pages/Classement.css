@@ -1,33 +1,50 @@
 /* ==========================================
-   CLASSEMENT SANAD – VERSION CLAIRE
-   Fond blanc, accent orange, élégant
+   CLASSEMENT SANAD – MODE CLAIR / SOMBRE
+   Sans scroll dans les cercles, sans lignes oranges
    ========================================== */
 
-.classement-modern {
-  --primary: #F97316;
-  --primary-dark: #EA580C;
-  --primary-light: #FF8C42;
-  --primary-soft: rgba(249, 115, 22, 0.1);
-  --bg: #FFFFFF;
-  --card-bg: #FFFFFF;
-  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --border: #E2E8F0;
-  --text-dark: #1E293B;
-  --text-muted: #64748B;
-  --transition: all 0.3s ease;
-}
-
+/* ----- BASE & THEME (variables utilisées depuis App.css) ----- */
 .classement-modern {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--bg-body);
   padding: 2rem;
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  color: var(--text-dark);
+  color: var(--text-primary);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Dégradés décoratifs */
+.classement-modern::before,
+.classement-modern::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+.classement-modern::before {
+  top: -10%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.15;
+}
+.classement-modern::after {
+  bottom: -10%;
+  left: -10%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.1;
 }
 
 .classement-container {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* ----- HEADER ----- */
@@ -38,14 +55,48 @@
 .classement-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
-    background: linear-gradient(135deg, #0f172a, #0f172a);  background-clip: text;
+  background: linear-gradient(135deg, var(--primary), #ffb347);
+  background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   margin-bottom: 0.5rem;
 }
 .subtitle {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 1rem;
+}
+
+/* ----- BARRE DE RECHERCHE (propre, sans bordures oranges) ----- */
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-elevated);
+  border-radius: 40px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.search-wrapper:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+}
+.search-icon {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+.search-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 /* ----- IMPACT CARDS ----- */
@@ -56,20 +107,20 @@
   margin-bottom: 2rem;
 }
 .stat-card {
-  background: var(--card-bg);
+  background: var(--bg-elevated);
   border-radius: 1rem;
   padding: 1rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: var(--transition);
+  transition: all 0.3s ease;
   border: 1px solid var(--border);
   box-shadow: var(--card-shadow);
 }
 .stat-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  border-color: var(--primary-light);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary);
 }
 .stat-icon {
   font-size: 2rem;
@@ -82,14 +133,14 @@
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-dark);
+  color: var(--text-primary);
 }
 .stat-label {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
-/* ----- BADGES ----- */
+/* ----- BADGES DE NIVEAUX (sans ligne orange) ----- */
 .badges-grid {
   display: flex;
   flex-wrap: wrap;
@@ -98,20 +149,23 @@
   margin-bottom: 2rem;
 }
 .badge-card {
-  background: var(--card-bg);
+  background: var(--bg-elevated);
   border-radius: 1rem;
   padding: 0.75rem 1.25rem;
   text-align: center;
-  border-top: 3px solid;
-  transition: var(--transition);
+  transition: all 0.3s ease;
   min-width: 130px;
   box-shadow: var(--card-shadow);
   border: 1px solid var(--border);
   border-top-width: 3px;
 }
+/* Suppression des couleurs oranges spécifiques sur les badges */
+.badge-card.etoile { border-top-color: #10b981; }   /* vert */
+.badge-card.coeur { border-top-color: #3b82f6; }    /* bleu */
+.badge-card.champion { border-top-color: #f59e0b; } /* jaune/orange mais pas de ligne dans cercle */
 .badge-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 .badge-icon {
   font-size: 1.2rem;
@@ -121,19 +175,20 @@
   display: block;
   font-size: 0.9rem;
   margin-top: 0.3rem;
+  color: var(--text-primary);
 }
 .badge-card span {
   font-size: 0.7rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
-/* ----- FILTERS ----- */
+/* ----- FILTRES ----- */
 .filters-top {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem;
-  background: var(--card-bg);
+  background: var(--bg-surface);
   border-radius: 1rem;
   padding: 1rem;
   margin-bottom: 2rem;
@@ -149,7 +204,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 .filter-options {
@@ -158,14 +213,14 @@
   flex-wrap: wrap;
 }
 .filter-options button {
-  background: #F8FAFC;
+  background: var(--bg-body);
   border: 1px solid var(--border);
   padding: 0.5rem 1rem;
   border-radius: 2rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   gap: 0.3rem;
@@ -176,12 +231,13 @@
   color: white;
   box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
-.filter-options button:hover {
+.filter-options button:hover:not(.active) {
+  background: var(--border);
+  color: var(--text-primary);
   transform: scale(1.02);
-  background: #F1F5F9;
 }
 
-/* ----- PODIUM ----- */
+/* ----- PODIUM (cercles sans scroll ni ligne orange) ----- */
 .podium {
   display: flex;
   justify-content: center;
@@ -191,11 +247,11 @@
   flex-wrap: wrap;
 }
 .podium-card {
-  background: var(--card-bg);
+  background: var(--bg-elevated);
   border-radius: 1.5rem;
   padding: 1.5rem;
   text-align: center;
-  transition: var(--transition);
+  transition: all 0.3s;
   width: 200px;
   border: 1px solid var(--border);
   box-shadow: var(--card-shadow);
@@ -203,40 +259,58 @@
 .podium-card.first {
   transform: scale(1.05);
   border: 2px solid var(--primary);
-  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.15);
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.2);
 }
 .podium-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 .podium-rank {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
-.podium-avatar {
+.podium-rank .trophy { color: #ffd700; }
+.podium-rank .medal { color: #e67e22; }
+
+/* CERCLES : suppression de tout scroll et ligne orange */
+.podium-avatar,
+.ranking-avatar {
   width: 80px;
   height: 80px;
   margin: 0 auto 1rem;
-  background: #F1F5F9;
+  background: var(--bg-surface);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: hidden;          /* Élimine le scroll */
+  border: none;              /* Pas de bordure */
+  outline: none;
+  box-shadow: none;
 }
-.podium-avatar img {
+.podium-avatar img,
+.ranking-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
-.podium-avatar svg {
+.podium-avatar svg,
+.ranking-avatar svg {
   font-size: 3rem;
-  color: #94A3B8;
+  color: var(--text-secondary);
 }
+/* Supprime les éventuelles barres de défilement résiduelles */
+.podium-avatar::-webkit-scrollbar,
+.ranking-avatar::-webkit-scrollbar {
+  display: none;
+}
+
 .podium-name {
   font-weight: 600;
   margin-bottom: 0.5rem;
+  color: var(--text-primary);
 }
 .podium-badge {
   display: inline-flex;
@@ -250,26 +324,28 @@
 .podium-points {
   font-size: 1.2rem;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
-/* ----- RANKING LIST ----- */
+/* ----- LISTE DES CLASSÉS (sans barre de défilement visible) ----- */
 .ranking-list {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
   margin-bottom: 2rem;
-  max-height: 500px;
-  overflow-y: auto;
-  padding-right: 0.5rem;
+  /* Supprime totalement le scroll */
+  overflow-y: visible;
+  max-height: none;
+  padding-right: 0;
 }
 .ranking-card {
-  background: var(--card-bg);
+  background: var(--bg-elevated);
   border-radius: 1rem;
   padding: 1rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: var(--transition);
+  transition: all 0.2s;
   border: 1px solid var(--border);
   box-shadow: var(--card-shadow);
   animation: fadeUp 0.5s ease forwards;
@@ -277,8 +353,8 @@
 }
 .ranking-card:hover {
   transform: translateX(5px);
-  border-color: var(--primary-light);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 .rank-number {
   font-size: 1.2rem;
@@ -286,31 +362,13 @@
   width: 50px;
   color: var(--primary);
 }
-.ranking-avatar {
-  width: 50px;
-  height: 50px;
-  background: #F1F5F9;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.ranking-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.ranking-avatar svg {
-  font-size: 1.5rem;
-  color: #94A3B8;
-}
 .ranking-info {
   flex: 1;
 }
 .ranking-name {
   font-weight: 600;
   margin-bottom: 0.2rem;
+  color: var(--text-primary);
 }
 .ranking-badge {
   display: inline-flex;
@@ -328,24 +386,39 @@
   font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 0.3rem;
+  color: var(--text-primary);
+}
+.points svg {
+  color: var(--primary);
 }
 .progress-container {
   width: 100px;
   height: 4px;
-  background: #E2E8F0;
+  background: var(--border);
   border-radius: 2px;
   overflow: hidden;
 }
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
   width: 0%;
   transition: width 0.5s ease;
 }
 
-/* ----- PERSONAL RANK ----- */
+/* Utilisateur courant */
+.ranking-card.current-user {
+  background: var(--bg-surface);
+  border-left: 4px solid var(--primary);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+}
+.ranking-card.current-user .rank-number {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+/* ----- CARTE PERSONNELLE ----- */
 .personal-rank {
-  background: #FEF9F4;
+  background: var(--bg-surface);
   border-radius: 1.5rem;
   padding: 1.5rem;
   margin-top: 2rem;
@@ -368,11 +441,12 @@
 }
 .rank-label {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 .rank-number-large {
   font-size: 2rem;
   font-weight: bold;
+  color: var(--primary);
 }
 .rank-details {
   text-align: right;
@@ -381,6 +455,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.2rem;
+  color: var(--text-primary);
 }
 .rank-badge {
   display: inline-flex;
@@ -395,7 +470,7 @@
   padding-top: 1rem;
   border-top: 1px solid var(--border);
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-align: center;
 }
 
@@ -409,19 +484,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* ----- SCROLLBAR ----- */
-.ranking-list::-webkit-scrollbar {
-  width: 6px;
-}
-.ranking-list::-webkit-scrollbar-track {
-  background: #F1F5F9;
-  border-radius: 3px;
-}
-.ranking-list::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 3px;
 }
 
 /* ----- RESPONSIVE ----- */
@@ -452,169 +514,35 @@
     min-width: 100px;
     padding: 0.5rem 0.8rem;
   }
+  .search-wrapper {
+    margin-bottom: 1rem;
+  }
 }
-/* ===== FILTRES MODERNES ===== */
-.filters-modern {
-  background: #fff;
-  border-radius: 1rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  border: 1px solid var(--border);
-  box-shadow: var(--card-shadow);
+/* Supprime tout scroll (vertical et horizontal) */
+.classement-modern {
+  overflow: hidden !important;
+  height: auto !important;
+  min-height: 100vh;
 }
 
-.filter-section {
-  flex: 1;
-  min-width: 200px;
+/* La liste des classés ne doit pas défiler */
+.ranking-list {
+  overflow-y: visible !important;
+  overflow-x: visible !important;
+  max-height: none !important;
+  height: auto !important;
 }
 
-.filter-label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
+/* Aucun scroll sur les conteneurs internes */
+.classement-container,
+.podium,
+.impact-stats,
+.badges-grid,
+.filters-top {
+  overflow: visible !important;
 }
 
-.segmented-control {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.segmented-control button {
-  background: #f8fafc;
-  border: 1px solid var(--border);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.segmented-control button.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
-  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
-}
-
-.segmented-control button:hover:not(.active) {
-  background: #f1f5f9;
-  transform: translateY(-1px);
-}
-
-/* ===== BARRE DE RECHERCHE ===== */
-.search-bar {
-  position: relative;
-  margin-bottom: 2rem;
-}
-
-.search-bar .search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  font-size: 1rem;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border: 1px solid var(--border);
-  border-radius: 2rem;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  background: #fff;
-}
-
-.search-bar input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
-}
-
-.no-results {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-/* Badges grid */
-.badges-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.badge-card {
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 0.75rem 1.25rem;
-  text-align: center;
-  border-top: 3px solid;
-  transition: var(--transition);
-  min-width: 130px;
-  box-shadow: var(--card-shadow);
-  border: 1px solid var(--border);
-  border-top-width: 3px;
-}
-
-/* Couleurs spécifiques */
-.badge-card.etoile {
-  border-top-color: #10b981;  /* vert émeraude */
-}
-.badge-card.coeur {
-  border-top-color: #e67e22;  /* orange */
-}
-.badge-card.champion {
-  border-top-color: rgb(255, 215, 0); /* or */
-}
-/* Podium : couleurs des icônes selon le rang */
-.podium-card.first .trophy {
-  color: #FFD700; /* or */
-}
-.podium-card.second .medal {
-  color: #e67e22; /* orange */
-}
-.podium-card.third .medal {
-  color: #10b981; /* vert */
-}
-
-/* Optionnel : pour l'étoile dans la liste, si tu veux qu'elle prenne la couleur du badge */
-.ranking-card .points svg {
-  color: inherit;
-}
-/* Pour que l'étoile hérite de la couleur du badge (si tu utilises style inline sur l'icône) */
-.ranking-card.current-user {
-  background: #fff7ed;
-  border-left: 4px solid var(--primary);
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
-}
-
-.ranking-card.current-user .rank-number {
-  color: var(--primary);
-  font-weight: 800;
-}
-.ranking-card.current-user {
-  background: #fff7ed;
-  border-left: 4px solid var(--primary);
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
-}
-
-.ranking-card.current-user .rank-number {
-  color: var(--primary);
-  font-weight: 800;
+/* Supprime les scrollbars sur tous les éléments (au cas où) */
+*::-webkit-scrollbar {
+  display: none !important;
 }

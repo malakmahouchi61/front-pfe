@@ -1,35 +1,42 @@
-import React, { createContext, useContext, useEffect, useRef } from "react";
-import { getSocket, disconnectSocket } from "../socket";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { getSocket } from "../socket"; // disconnectSocket supprimé (non utilisé)
 
-const SocketContext = createContext(null);
+const SocketContext = createContext({ socket: null, isConnected: false });
 
-export const useSocket = () => useContext(SocketContext);
+export const useSocket = () => {
+  const context = useContext(SocketContext);
+  return context ?? { socket: null, isConnected: false };
+};
 
 export const SocketProvider = ({ children, userId }) => {
-  const socketRef = useRef(null);
+  const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (userId) {
-      // Créer ou récupérer le socket
       const newSocket = getSocket();
       if (newSocket) {
-        socketRef.current = newSocket;
+        setSocket(newSocket);
+        const onConnect = () => setIsConnected(true);
+        const onDisconnect = () => setIsConnected(false);
+        newSocket.on("connect", onConnect);
+        newSocket.on("disconnect", onDisconnect);
+        setIsConnected(newSocket.connected);
+
+        return () => {
+          newSocket.off("connect", onConnect);
+          newSocket.off("disconnect", onDisconnect);
+        };
       }
     } else {
-      // Déconnexion
-      if (socketRef.current) {
-        disconnectSocket();
-        socketRef.current = null;
-      }
+      setSocket(null);
+      setIsConnected(false);
     }
-
-    return () => {
-      // Ne pas déconnecter automatiquement, cela sera fait au logout
-    };
-  }, [userId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]); // userId est la seule dépendance nécessaire
 
   return (
-    <SocketContext.Provider value={socketRef.current}>
+    <SocketContext.Provider value={{ socket, isConnected }}>
       {children}
     </SocketContext.Provider>
   );

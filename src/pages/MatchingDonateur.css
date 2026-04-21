@@ -1,0 +1,245 @@
+.matching-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: calc(100vh - 80px);
+}
+
+.matching-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.matching-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), #ffb347);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+}
+
+.title-icon {
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+.section-title h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.badge {
+  background: var(--primary);
+  color: white;
+  border-radius: 2rem;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.8rem;
+}
+
+.matching-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 1.2rem;
+  transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.matching-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), #ffb347);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+
+.matching-card:hover::before {
+  transform: scaleX(1);
+}
+
+.matching-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.card-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  margin-right: 0.5rem;
+}
+
+.score-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+  min-width: 45px;
+  text-align: center;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.card-details p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.card-details svg {
+  color: var(--primary);
+  width: 14px;
+  height: 14px;
+}
+
+.urgence-value {
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.btn-action {
+  width: 100%;
+  padding: 0.7rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.btn-action:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: var(--bg-surface);
+  border-radius: 1.5rem;
+  color: var(--text-secondary);
+  border: 1px dashed var(--border);
+}
+
+.matching-loading, .matching-error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1rem;
+}
+
+.matching-error {
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .matching-container {
+    padding: 1rem;
+  }
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .section-title h2 {
+    font-size: 1.2rem;
+  }
+}
+/* ... (conservez les styles précédents) ... */
+
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  background: var(--bg-surface);
+  padding: 0.8rem 1rem;
+  border-radius: 3rem;
+  border: 1px solid var(--border);
+}
+
+.filter-icon {
+  color: var(--primary);
+  margin-right: 0.5rem;
+}
+
+.filters-bar button {
+  background: transparent;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filters-bar button.filter-active {
+  background: var(--primary);
+  color: white;
+}
+
+.filters-bar button:hover:not(.filter-active) {
+  background: var(--border);
+  color: var(--text-primary);
+}

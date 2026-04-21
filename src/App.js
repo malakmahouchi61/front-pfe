@@ -1,4 +1,3 @@
-// App.jsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -25,6 +24,8 @@ import DemandeAide from "./pages/DemandeAide";
 import CreerCampagne from "./pages/CreerCampagne";
 import Dashboard from "./pages/Dashboard";
 import DemandeDetail from "./pages/DemandeDetail";
+import MatchingDonateur from "./pages/MatchingDonateur";
+import Priorisation from "./pages/Priorisation";
 
 import "./App.css";
 
@@ -50,6 +51,8 @@ const AppContent = () => {
             <Route path="/campagnes/:id" element={<CampagnesDetail />} />
             <Route path="/classement" element={<Classement />} />
             <Route path="/profil" element={<Profil />} />
+            <Route path="/matching-ia" element={<MatchingDonateur />} />
+            <Route path="/priorisation" element={<Priorisation />} />
             <Route
               path="/demander-aide"
               element={

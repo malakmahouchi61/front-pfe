@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { FaUserCircle, FaSun, FaMoon } from 'react-icons/fa';
+import { FaUserCircle, FaSun, FaMoon, FaHandHoldingHeart } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import NotificationBell from './NotificationBell';
@@ -30,7 +30,9 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <Link to="/" className="nav-logo">Sanad</Link>
+        <Link to="/" className="nav-logo">
+          <FaHandHoldingHeart className="logo-icon" /> Sanad
+        </Link>
 
         <ul className="nav-menu">
           <li>
@@ -67,7 +69,6 @@ const Navbar = () => {
             {darkMode ? <FaSun /> : <FaMoon />}
           </button>
 
-          {/* Notification Bell – affichée seulement si connecté */}
           {user && <NotificationBell />}
 
           {user ? (

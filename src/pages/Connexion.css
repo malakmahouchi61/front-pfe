@@ -1,4 +1,4 @@
-/* Connexion.css - Design moderne */
+/* Connexion.css - Mode sombre/clair avec variables globales */
 
 .connexion-container {
   display: flex;
@@ -6,12 +6,12 @@
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+  background: var(--bg-body);
   position: relative;
   overflow: hidden;
 }
 
-/* Éléments décoratifs */
+/* Éléments décoratifs adaptés au thème */
 .connexion-container::before {
   content: '';
   position: absolute;
@@ -19,7 +19,8 @@
   right: -10%;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(245, 124, 16, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.15;
   border-radius: 50%;
   z-index: 0;
 }
@@ -31,20 +32,22 @@
   left: -10%;
   width: 350px;
   height: 350px;
-  background: radial-gradient(circle, rgba(245, 124, 16, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.1;
   border-radius: 50%;
   z-index: 0;
 }
 
+/* Carte avec effet glassmorphisme adapté */
 .connexion-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
   padding: 2.5rem;
   border-radius: 2rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--card-shadow);
   width: 100%;
   max-width: 420px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--border);
   position: relative;
   z-index: 1;
   animation: fadeInUp 0.6s ease-out;
@@ -52,7 +55,7 @@
 
 .connexion-card h2 {
   font-size: 2.2rem;
-  color: #2d3748;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
   text-align: center;
   font-weight: 700;
@@ -61,18 +64,18 @@
 
 .connexion-card .subtitle {
   text-align: center;
-  color: #718096;
+  color: var(--text-secondary);
   font-size: 1rem;
   margin-bottom: 2rem;
   font-weight: 400;
 }
 
 .error-message {
-  background-color: #fff5f5;
-  color: #c53030;
+  background-color: rgba(199, 48, 48, 0.1);
+  color: #e53e3e;
   padding: 0.75rem 1rem;
   margin-bottom: 1.5rem;
-  border-left: 4px solid #f57c10;
+
   border-radius: 0.5rem;
   font-size: 0.9rem;
 }
@@ -85,7 +88,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -94,29 +97,30 @@
 .form-group input {
   width: 100%;
   padding: 1rem 1.2rem;
-  border: 2px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 1rem;
   font-size: 1rem;
   transition: all 0.2s ease;
   outline: none;
-  background: white;
-  color: #2d3748;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .form-group input:focus {
-  border-color: #f57c10;
-  box-shadow: 0 0 0 4px rgba(245, 124, 16, 0.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
 }
 
 .form-group input::placeholder {
-  color: #a0aec0;
+  color: var(--text-secondary);
+  opacity: 0.6;
   font-weight: 300;
 }
 
 .btn-connexion {
   width: 100%;
   padding: 1rem;
-  background: #f57c10;
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 1rem;
@@ -125,30 +129,30 @@
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 0.5rem;
-  box-shadow: 0 4px 6px rgba(245, 124, 16, 0.3);
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
   letter-spacing: 0.5px;
 }
 
 .btn-connexion:hover {
-  background: #e06d00;
+  background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 12px rgba(245, 124, 16, 0.4);
+  box-shadow: 0 8px 16px rgba(249, 115, 22, 0.4);
 }
 
 .btn-connexion:active {
   transform: translateY(0);
-  box-shadow: 0 4px 6px rgba(245, 124, 16, 0.3);
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
 }
 
 .inscription-link {
   margin-top: 2rem;
   text-align: center;
-  color: #4a5568;
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
 .inscription-link a {
-  color: #f57c10;
+  color: var(--primary);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
@@ -157,8 +161,8 @@
 }
 
 .inscription-link a:hover {
-  color: #e06d00;
-  border-bottom-color: #f57c10;
+  color: var(--primary-hover);
+  border-bottom-color: var(--primary);
 }
 
 /* Animation */
@@ -178,8 +182,11 @@
   .connexion-card {
     padding: 2rem;
   }
-
   .connexion-card h2 {
     font-size: 1.8rem;
   }
+}
+/* Évite que le menu de langue soit caché sur la page de connexion */
+.connexion-container .lang-menu {
+  z-index: 10002;
 }

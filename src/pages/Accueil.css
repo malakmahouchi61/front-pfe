@@ -1,257 +1,544 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..500;14..32,600;14..32,700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
 /* ===== HERO SECTION ===== */
 .hero {
   position: relative;
   width: 100%;
-  min-height: 100vh;                /* Permet le scroll vers le bas */
-  background-image: url('https://www.cc-vsa.com/medias/2022/02/AdobeStock_2375050011-2000x1333.jpeg');
+  min-height: 90vh;
+  background-image: url('c:\Users\lenovo\Desktop\575b7d71daa244dada4b65529fcf3376.jpg');
   background-size: cover;
-  background-position: center;
+  background-position: center 30%;
   display: flex;
   align-items: center;
-  justify-content: flex-start;      /* Contenu aligné à gauche */
-  color: white;
-  padding: 2rem;
+  justify-content: flex-start;
+  padding: 4rem 2rem;
+  isolation: isolate;
 }
 
 .hero-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(245, 124, 0, 0.4); /* Overlay orange */
+  inset: 0;
+  background: linear-gradient(35deg, #f57c1087 0%, #1e293bb3 70%);
+  backdrop-filter: blur(1px);
   z-index: 1;
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 600px;
-  margin-left: 5%;                  /* Espacement par rapport au bord */
-  text-align: left;
+  max-width: 700px;
+  margin-inline-start: 8%;
+  text-align: start;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(245, 124, 0, 0.85);
+  backdrop-filter: blur(4px);
+  padding: 0.4rem 1rem;
+  border-radius: 40px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.badge-icon {
+  font-size: 0.8rem;
+  color: #ffddbb;
 }
 
 .hero-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  
-}
-
-.hero-subtitle {
-  font-size: 2.5rem;
+  font-size: 3.2rem;
   font-weight: 800;
-  margin-bottom: 1.5rem;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
   line-height: 1.2;
+  color: white;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .hero-description {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.6;
-  margin-bottom: 2.5rem;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 1rem 2rem;
-  border-radius: 50px;
-  backdrop-filter: blur(4px);
-  display: inline-block;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 2rem;
+  max-width: 550px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* ===== BOUTONS ===== */
 .hero-buttons {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  align-items: center;
 }
 
-.btn {
+.hero-buttons .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   text-decoration: none;
-  padding: 0.9rem 2.2rem;
-  border-radius: 40px;
+  padding: 0.75rem 1.8rem;
+  border-radius: 50px;
   font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.25s;
-  border: 2px solid transparent;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
   cursor: pointer;
+  border: 2px solid transparent;
+  line-height: 1.2;
+  white-space: nowrap;
+  width: auto !important;
+  min-width: 180px;
+  justify-content: center;
 }
 
 .btn-primary {
   background: #f57c00;
   color: white;
   border-color: #f57c00;
-  box-shadow: 0 8px 16px rgba(245, 124, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
 }
 
 .btn-primary:hover {
   background: #e06d00;
-  border-color: #e06d00;
-  transform: scale(1.05);
-  box-shadow: 0 12px 24px rgba(245, 124, 0, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(245, 124, 0, 0.4);
 }
 
 .btn-outline {
-  border: 2px solid white;
-  color: #000000;
   background: transparent;
+  border-color: white;
+  color: white;
 }
 
 .btn-outline:hover {
   background: white;
   color: #f57c00;
-  transform: scale(1.05);
+  transform: translateY(-3px);
 }
 
-/* ===== SECTION CHOIX (parcours) ===== */
+/* Statistiques flottantes */
+.hero-stats {
+  position: absolute;
+  bottom: 2rem;
+  inset-inline-end: 2rem;
+  z-index: 2;
+  display: flex;
+  gap: 2rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  padding: 1rem 2rem;
+  border-radius: 60px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* ===== SECTIONS GÉNÉRALES ===== */
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.section-header p {
+  font-size: 1rem;
+  color: #5b6e8c;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== SECTION CHOIX ===== */
 .choix-section {
   max-width: 1200px;
   margin: 5rem auto;
   padding: 0 2rem;
-  text-align: center;
-}
-
-.choix-titre {
-  font-size: 2.5rem;
-  color: #0f0700;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  letter-spacing: -0.5px;
-}
-
-.choix-sous-titre {
-  font-size: 1.2rem;
-  color: #6b7a8f;
-  margin-bottom: 3rem;
-  font-weight: 400;
 }
 
 .choix-cartes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .carte {
-  background: #ffffff;
-  border-radius: 16px;
+  background: white;
+  border-radius: 28px;
   padding: 2.5rem 1.8rem;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.02);
-  transition: all 0.2s ease;
-  border: 1px solid #eef2f6;
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+  border: 1px solid #edf2f7;
+  text-align: center;
 }
 
 .carte:hover {
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.04);
-  border-color: #d4dce6;
+  transform: translateY(-10px);
+  box-shadow: 0 25px 40px rgba(0, 0, 0, 0.08);
+  border-color: #f57c00;
+}
+
+.carte-icon {
+  font-size: 3.2rem;
+  color: #f57c00;
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s;
+}
+
+.carte:hover .carte-icon {
+  transform: scale(1.05);
 }
 
 .carte h3 {
-  font-size: 1.8rem;
-  color: #0f0700;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #0f172a;
   margin-bottom: 1rem;
-  font-weight: 500;
-  letter-spacing: -0.3px;
 }
 
 .carte p {
-  color: #5a6b7a;
-  margin-bottom: 2rem;
+  color: #5b6e8c;
   line-height: 1.6;
-  font-size: 1rem;
-  font-weight: 300;
-  flex-grow: 1;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
 }
 
 .carte-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   background: transparent;
-  border: 1px solid #0f0700;
-  color: #0f0700;
-  padding: 0.7rem 1.8rem;
+  border: 1px solid #f57c00;
+  color: #f57c00;
+  padding: 0.6rem 1.4rem;
   border-radius: 40px;
-  font-weight: 400;
+  font-weight: 500;
   text-decoration: none;
   transition: all 0.2s;
-  align-self: center;
-  margin-top: auto;
-  font-size: 0.95rem;
-  letter-spacing: 0.3px;
+  font-size: 0.9rem;
 }
 
 .carte-btn:hover {
-  background: #0f0700;
+  background: #f57c00;
+  border-color: #f57c00;
   color: white;
+}
+
+/* ===== SECTION VALEURS (Pourquoi choisir Sanad) ===== */
+.valeurs-section {
+  background: #f8fafc;
+  padding: 5rem 2rem;
+  margin-top: 2rem;
+}
+
+.valeurs-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.5rem;
+}
+
+.valeur-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.25s;
+  border: 1px solid #eef2f6;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+}
+
+.valeur-card:hover {
+  transform: translateY(-5px);
+  border-color: #f57c00;
+  box-shadow: 0 15px 30px rgba(245, 124, 0, 0.08);
+}
+
+.valeur-icon {
+  font-size: 2.5rem;
+  color: #f57c00;
+  margin-bottom: 1rem;
+}
+
+.valeur-card h4 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  color: #0f172a;
+}
+
+.valeur-card p {
+  color: #5b6e8c;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* ===== BOUTON CHATBOT (carte Assistant IA) ===== */
+.chat-trigger-btn {
+  background: #f57c00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  width: 100%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chat-trigger-btn:hover {
+  background: #e06d00;
+  transform: translateY(-2px);
+}
+
+/* ===== MODALE DU CHATBOT ===== */
+.chat-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+.chat-modal-container {
+  background: white;
+  border-radius: 32px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.3s ease;
+}
+
+.chat-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f57c00;
+  color: white;
+}
+
+.chat-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.close-modal:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+  .hero {
+    min-height: 80vh;
+    padding: 2rem;
+  }
   .hero-content {
-    margin-left: 2%;
-    max-width: 90%;
+    margin-left: 0;
+    text-align: center;
   }
   .hero-title {
-    font-size: 1.6rem;
-  }
-  .hero-subtitle {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   .hero-description {
-    font-size: 1rem;
-    padding: 0.8rem 1.5rem;
+    margin-left: auto;
+    margin-right: auto;
   }
   .hero-buttons {
-    flex-direction: column;
-    gap: 1rem;
+    justify-content: center;
   }
-  .btn {
-    width: 100%;
-    text-align: center;
+  .hero-stats {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    margin-top: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    background: rgba(0, 0, 0, 0.5);
   }
-
-  .choix-titre {
-    font-size: 2rem;
+  .section-header h2 {
+    font-size: 1.8rem;
   }
-  .carte {
-    padding: 2rem 1.2rem;
+  .choix-cartes {
+    gap: 1.5rem;
   }
-  .carte h3 {
-    font-size: 1.6rem;
+  .valeurs-grid {
+    gap: 1.5rem;
   }
 }
-.carte-icon {
-  font-size: 3rem;      /* Taille des icônes */
-  color: #0f0700;       /* Orange, comme tes boutons */
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  .hero-buttons .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+/* ===== SECTION POURQUOI CHOISIR SANAD ===== */
+.valeurs-section {
+  padding: 4rem 2rem;
+  background: var(--bg-body);
+}
+
+.valeurs-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.valeur-card {
+  flex: 1 1 280px;
+  background: var(--bg-elevated);
+  backdrop-filter: blur(8px);
+  border-radius: 1.8rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  box-shadow: var(--card-shadow);
+}
+
+.valeur-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+}
+
+.valeur-icon {
+  font-size: 2.8rem;
+  color: var(--primary);
   margin-bottom: 1rem;
-  line-height: 1;
-}
-/* Effet de survol sur les cartes */
-.carte {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  display: inline-block;
 }
 
-.carte:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 30px rgba(245, 124, 0, 0.15);
-  border-color: #f57c00;
+.valeur-card h4 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  color: var(--text-primary);
 }
 
-/* Effet supplémentaire sur l'icône (optionnel) */
-.carte:hover .carte-icon {
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
+.valeur-card p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 1.2rem;
 }
-.carte:hover .carte-btn {
-  background: #f57c00;
+
+.chat-trigger-btn {
+  background: transparent;
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  padding: 0.5rem 1.2rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-trigger-btn:hover {
+  background: var(--primary);
   color: white;
-}
-h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: -0.02em;
-    /* margin-bottom: 0.5rem; */
-    text-align: center;
 }

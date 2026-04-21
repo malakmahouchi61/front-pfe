@@ -4,8 +4,8 @@ import { useNotifications } from "../context/NotificationContext";
 import { toast } from "react-toastify";
 
 const NotificationListener = () => {
-  const socket = useSocket();
-  const { refresh } = useNotifications(); // plus besoin de addNotification
+  const { socket } = useSocket();
+  const { refresh } = useNotifications();
 
   useEffect(() => {
     if (!socket) return;

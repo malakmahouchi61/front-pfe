@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaImage, FaBullhorn, FaCalendarAlt } from 'react-icons/fa';
+import { FaArrowLeft, FaImage, FaBullhorn } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './CreerCampagne.css';
 
@@ -14,8 +14,8 @@ const CreerCampagne = () => {
     type_campagne: 'kafala',
     titre: '',
     description: '',
-    localisation: '',
     urgence: 'normale',
+    ville: '',
     objectif: '',
     date_fin: '',
     besoinMateriel: '',
@@ -53,7 +53,7 @@ const CreerCampagne = () => {
       return;
     }
 
-    // Validation
+    // Validations
     if (formData.type_campagne === 'financier' && !formData.objectif) {
       alert('Veuillez saisir un objectif financier.');
       return;
@@ -75,14 +75,11 @@ const CreerCampagne = () => {
       return;
     }
 
-    // Construction description complète
-    let fullDescription = `${formData.titre}\n\n${formData.description}\n\nLocalisation: ${formData.localisation}\nUrgence: ${formData.urgence}\nDate fin: ${formData.date_fin}`;
+    let fullDescription = formData.description;
     if (formData.type_campagne === 'financier') {
       fullDescription += `\nObjectif: ${formData.objectif} €`;
     } else if (formData.type_campagne === 'kafala') {
-      if (avecObjectif) {
-        fullDescription += `\nObjectif: ${formData.objectif} €`;
-      }
+      if (avecObjectif) fullDescription += `\nObjectif: ${formData.objectif} €`;
       fullDescription += `\nBesoin: ${formData.besoinMateriel}`;
     } else {
       fullDescription += `\nBesoin: ${formData.besoinMateriel}`;
@@ -95,6 +92,8 @@ const CreerCampagne = () => {
     formDataToSend.append('description', fullDescription);
     formDataToSend.append('objectif', formData.objectif || 0);
     formDataToSend.append('date_fin', formData.date_fin);
+    formDataToSend.append('urgence', formData.urgence);
+    formDataToSend.append('ville', formData.ville || '');
     if (formData.image) {
       formDataToSend.append('image', formData.image);
     }
@@ -131,18 +130,10 @@ const CreerCampagne = () => {
           </p>
 
           <form onSubmit={handleSubmit} encType="multipart/form-data">
-            {/* Type de campagne */}
+            {/* Type */}
             <div className="form-group">
               <label>Type de campagne *</label>
-              <select
-                name="type_campagne"
-                value={formData.type_campagne}
-                onChange={(e) => {
-                  setFormData({ ...formData, type_campagne: e.target.value });
-                  setAvecObjectif(false);
-                }}
-                required
-              >
+              <select name="type_campagne" value={formData.type_campagne} onChange={handleChange} required>
                 <option value="kafala">Kafala (parrainage)</option>
                 <option value="financier">Collecte financière</option>
                 <option value="materiel">Collecte de matériel</option>
@@ -154,41 +145,20 @@ const CreerCampagne = () => {
             {/* Titre */}
             <div className="form-group">
               <label>Titre de la campagne *</label>
-              <input
-                type="text"
-                name="titre"
-                value={formData.titre}
-                onChange={handleChange}
-                placeholder="Ex: Aide aux sinistrés de la région"
-                required
-              />
+              <input type="text" name="titre" value={formData.titre} onChange={handleChange} required />
             </div>
 
             {/* Description */}
             <div className="form-group">
               <label>Description détaillée *</label>
-              <textarea
-                name="description"
-                rows="5"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Décrivez votre projet, les bénéficiaires, le contexte..."
-                required
-              />
+              <textarea name="description" rows="5" value={formData.description} onChange={handleChange} required />
             </div>
 
-            {/* Localisation & Urgence */}
+            {/* Ville & Urgence */}
             <div className="form-row">
               <div className="form-group">
-                <label>Localisation *</label>
-                <input
-                  type="text"
-                  name="localisation"
-                  value={formData.localisation}
-                  onChange={handleChange}
-                  placeholder="Ville, région"
-                  required
-                />
+                <label>Ville *</label>
+                <input type="text" name="ville" value={formData.ville} onChange={handleChange} required />
               </div>
               <div className="form-group">
                 <label>Niveau d'urgence</label>
@@ -200,117 +170,59 @@ const CreerCampagne = () => {
               </div>
             </div>
 
-            {/* Date de fin avec icône calendrier */}
+            {/* Date de fin */}
             <div className="form-group">
-              <label>
-                Date de fin de la campagne <FaCalendarAlt /> *
-              </label>
-              <input
-                type="date"
-                name="date_fin"
-                value={formData.date_fin}
-                onChange={handleChange}
-                required
-              />
+              <label>Date de fin *</label>
+              <input type="date" name="date_fin" value={formData.date_fin} onChange={handleChange} required />
             </div>
 
-            {/* Cas financier pur */}
+            {/* Objectif selon type */}
             {formData.type_campagne === 'financier' && (
               <div className="form-group">
                 <label>Objectif financier (€) *</label>
-                <input
-                  type="number"
-                  name="objectif"
-                  value={formData.objectif}
-                  onChange={handleChange}
-                  min="1"
-                  step="0.01"
-                  required
-                />
+                <input type="number" name="objectif" value={formData.objectif} onChange={handleChange} required />
               </div>
             )}
 
-            {/* Cas Kafala */}
             {formData.type_campagne === 'kafala' && (
               <>
                 <div className="checkbox-group">
                   <label>
-                    <input
-                      type="checkbox"
-                      checked={avecObjectif}
-                      onChange={(e) => setAvecObjectif(e.target.checked)}
-                    />
+                    <input type="checkbox" checked={avecObjectif} onChange={(e) => setAvecObjectif(e.target.checked)} />
                     Cette campagne a un objectif financier
                   </label>
                 </div>
-
                 {avecObjectif && (
                   <div className="form-group">
-                    <label>Objectif financier (€) *</label>
-                    <input
-                      type="number"
-                      name="objectif"
-                      value={formData.objectif}
-                      onChange={handleChange}
-                      min="1"
-                      step="0.01"
-                      required
-                    />
+                    <label>Objectif financier (€)</label>
+                    <input type="number" name="objectif" value={formData.objectif} onChange={handleChange} />
                   </div>
                 )}
-
                 <div className="form-group">
-                  <label>{avecObjectif ? 'Description du besoin (optionnelle)' : 'Description du besoin *'}</label>
-                  <textarea
-                    name="besoinMateriel"
-                    rows="3"
-                    value={formData.besoinMateriel}
-                    onChange={handleChange}
-                    placeholder="Décrivez le contexte, les besoins spécifiques..."
-                    required={!avecObjectif}
-                  />
+                  <label>Description du besoin {!avecObjectif && '*'}</label>
+                  <textarea name="besoinMateriel" rows="3" value={formData.besoinMateriel} onChange={handleChange} required={!avecObjectif} />
                 </div>
               </>
             )}
 
-            {/* Autres types (materiel, competences, collectif) */}
-            {formData.type_campagne && !['financier', 'kafala'].includes(formData.type_campagne) && (
+            {!['financier', 'kafala'].includes(formData.type_campagne) && (
               <div className="form-group">
                 <label>Description du besoin *</label>
-                <textarea
-                  name="besoinMateriel"
-                  rows="3"
-                  value={formData.besoinMateriel}
-                  onChange={handleChange}
-                  placeholder="Décrivez précisément ce dont vous avez besoin..."
-                  required
-                />
+                <textarea name="besoinMateriel" rows="3" value={formData.besoinMateriel} onChange={handleChange} required />
               </div>
             )}
 
-            {/* Upload d'image */}
+            {/* Image */}
             <div className="form-group">
               <label>Image de la campagne (optionnel)</label>
               <div className="file-upload">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/*, .pdf"
-                  id="file-input"
-                />
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*, .pdf" />
                 <button type="button" onClick={handleParcourirClick} className="btn-outline">
                   <FaImage /> Choisir un fichier
                 </button>
-                <span className="file-name">
-                  {formData.image ? formData.image.name : 'Aucun fichier choisi'}
-                </span>
+                <span className="file-name">{formData.image ? formData.image.name : 'Aucun fichier choisi'}</span>
               </div>
-              {imagePreview && (
-                <div className="image-preview">
-                  <img src={imagePreview} alt="Aperçu" />
-                </div>
-              )}
+              {imagePreview && <div className="image-preview"><img src={imagePreview} alt="Aperçu" /></div>}
               <small>Formats acceptés : images (tous formats) et PDF (max 5 Mo)</small>
             </div>
 

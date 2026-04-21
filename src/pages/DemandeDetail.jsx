@@ -1,3 +1,6 @@
+// DemandeDetail.jsx – page détail d’une mission (demande)
+// Version sans traduction (français statique)
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,7 +11,11 @@ import {
   FaGraduationCap,
   FaHeart,
   FaDonate,
-  FaCheckCircle
+  FaCheckCircle,
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaUsers,
+  FaImage
 } from 'react-icons/fa';
 import './DemandeDetail.css';
 
@@ -17,15 +24,16 @@ function DemandeDetail() {
   const { user } = useAuth();
   const [demande, setDemande] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [typeDon, setTypeDon] = useState('financier');
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [customAmount, setCustomAmount] = useState('');
   const [quantite, setQuantite] = useState('');
   const [competence, setCompetence] = useState('');
   const [disponibilite, setDisponibilite] = useState('');
-  const [description, setDescription] = useState('');
+  const [descriptionDon, setDescriptionDon] = useState('');
   const [messageFinancier, setMessageFinancier] = useState('');
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState(null);
 
   const formatNumber = (num) => {
     const number = Number(num);
@@ -39,10 +47,11 @@ function DemandeDetail() {
     const fetchDemande = async () => {
       try {
         const res = await fetch(`http://localhost:3000/demandes/${id}`);
+        if (!res.ok) throw new Error('Demande non trouvée');
         const data = await res.json();
         setDemande(data);
-      } catch (error) {
-        console.error('Erreur chargement:', error);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -56,19 +65,21 @@ function DemandeDetail() {
     setQuantite('');
     setCompetence('');
     setDisponibilite('');
-    setDescription('');
+    setDescriptionDon('');
     setMessageFinancier('');
-    setMessage('');
+    setMessage(null);
   }, [typeDon]);
 
-  const handleDon = async () => {
-    if (!user) {
+  const handleDon = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+    const token = localStorage.getItem('token');
+    if (!user || !token) {
       setMessage({ type: 'error', text: 'Vous devez être connecté pour faire un don.' });
       return;
     }
 
     let donData = {};
-
     if (typeDon === 'financier') {
       let montantVal = selectedAmount ? selectedAmount : parseFloat(customAmount);
       if (isNaN(montantVal) || montantVal <= 0) {
@@ -88,7 +99,7 @@ function DemandeDetail() {
         setMessage({ type: 'error', text: 'Veuillez renseigner la quantité.' });
         return;
       }
-      const descriptionComplete = `[Matériel] Quantité : ${quantite} | Détails : ${description}`;
+      const descriptionComplete = `[Matériel] Quantité : ${quantite} | Détails : ${descriptionDon}`;
       donData = {
         id_donateur: user.id_utilisateur,
         type_don: typeDon,
@@ -101,7 +112,7 @@ function DemandeDetail() {
         setMessage({ type: 'error', text: 'Veuillez renseigner la compétence proposée et la disponibilité.' });
         return;
       }
-      const descriptionComplete = `[Compétence] Compétence : ${competence} | Disponibilité : ${disponibilite} | Détails : ${description}`;
+      const descriptionComplete = `[Compétence] Compétence : ${competence} | Disponibilité : ${disponibilite} | Détails : ${descriptionDon}`;
       donData = {
         id_donateur: user.id_utilisateur,
         type_don: typeDon,
@@ -116,31 +127,40 @@ function DemandeDetail() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(donData)
       });
       const result = await res.json();
-      if (res.ok) {
-        setMessage({ type: 'success', text: '✅ Contribution enregistrée avec succès ! En attente de validation.' });
-        setSelectedAmount(null);
-        setCustomAmount('');
-        setQuantite('');
-        setCompetence('');
-        setDisponibilite('');
-        setDescription('');
-        setMessageFinancier('');
-      } else {
-        setMessage({ type: 'error', text: result.error || 'Erreur lors de l’enregistrement.' });
-      }
+      if (!res.ok) throw new Error(result.error || 'Erreur lors du don');
+      setMessage({ type: 'success', text: 'Votre contribution a été enregistrée et sera validée par l’administrateur.' });
+      setSelectedAmount(null);
+      setCustomAmount('');
+      setQuantite('');
+      setCompetence('');
+      setDisponibilite('');
+      setDescriptionDon('');
+      setMessageFinancier('');
     } catch (err) {
-      console.error(err);
-      setMessage({ type: 'error', text: 'Erreur réseau' });
+      setMessage({ type: 'error', text: err.message });
     }
   };
 
   if (loading) return <div className="loading">Chargement de la demande...</div>;
+  if (error) return <div className="error-message">{error}</div>;
   if (!demande) return <div className="error-message">Demande introuvable</div>;
+
+  const isFinancial = demande.type_demande === 'financier';
+  const collecte = Number(demande.collecte) || 0;
+  const objectif = Number(demande.objectif) || 0;
+
+  const joursRestants = () => {
+    if (!demande.date_fin) return 0;
+    const fin = new Date(demande.date_fin);
+    const aujourdhui = new Date();
+    const diff = fin - aujourdhui;
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
 
   const getTypeIcon = (type) => {
     switch (type) {
@@ -152,7 +172,6 @@ function DemandeDetail() {
   };
 
   const getTypeLabel = (type) => {
-    if (!type) return 'Type non défini';
     const types = {
       financier: 'FINANCIER',
       materiel: 'MATÉRIEL',
@@ -162,7 +181,6 @@ function DemandeDetail() {
   };
 
   const getTypeColor = (type) => {
-    if (!type) return '#f59e0b';
     switch (type) {
       case 'financier': return '#10b981';
       case 'materiel': return '#3b82f6';
@@ -179,14 +197,17 @@ function DemandeDetail() {
 
       <div className="demande-detail-card">
         <div className="demande-image-wrapper">
-          {demande.justificatif ? (
+          {demande.image_path ? (
             <img
-              src={`http://localhost:3000${demande.justificatif}`}
+              src={`http://localhost:3000${demande.image_path}`}
               alt={demande.titre}
               className="demande-detail-image"
             />
           ) : (
-            <div className="placeholder-image">Image non disponible</div>
+            <div className="placeholder-image">
+              <FaImage className="placeholder-icon" />
+              <span>Image non disponible</span>
+            </div>
           )}
           <div className="demande-type-badge" style={{ backgroundColor: `${getTypeColor(demande.type_demande)}20`, color: getTypeColor(demande.type_demande) }}>
             {getTypeIcon(demande.type_demande)} {getTypeLabel(demande.type_demande)}
@@ -194,16 +215,27 @@ function DemandeDetail() {
         </div>
 
         <div className="demande-content">
-          <h1>{demande.titre}</h1>
-          <div className="demande-description">{demande.description}</div>
+          <h1>{demande.titre || 'Sans titre'}</h1>
+          <div className="demande-description">{demande.description || ''}</div>
 
-          {demande.type_demande === 'financier' && (
-            <div className="campagne-progress">
+          <div className="demande-meta">
+            {demande.ville && (
+              <p><FaMapMarkerAlt /> {demande.ville}</p>
+            )}
+            <p><FaCalendarAlt /> Date limite : {new Date(demande.date_fin).toLocaleDateString('fr-FR')} ({joursRestants()} jours restants)</p>
+          </div>
+
+          {isFinancial && (
+            <div className="progress-section">
               <div className="progress-stats">
-                <span className="collected">{formatNumber(demande.collecte || 0)} TND</span>
-                <span className="goal">Objectif : {formatNumber(demande.objectif)} TND</span>
+                <span className="collected">{formatNumber(collecte)} TND</span>
+                <span className="goal">Objectif : {formatNumber(objectif)} TND</span>
               </div>
-              <progress value={demande.collecte || 0} max={demande.objectif || 0} />
+              <progress value={collecte} max={objectif} />
+              <div className="progress-percent">{((collecte / objectif) * 100).toFixed(0)}%</div>
+              <div className="extra-stats">
+                <span><FaUsers /> {demande.nombre_donateurs || 0} donateurs</span>
+              </div>
             </div>
           )}
 
@@ -214,8 +246,8 @@ function DemandeDetail() {
                 <div
                   key={type}
                   className={`don-tile ${typeDon === type ? 'selected' : ''}`}
+                  data-type={type}
                   onClick={() => setTypeDon(type)}
-                  style={{ borderColor: typeDon === type ? getTypeColor(type) : '#e9ecef' }}
                 >
                   <div className="tile-icon" style={{ color: getTypeColor(type) }}>{getTypeIcon(type)}</div>
                   <div className="tile-label">{getTypeLabel(type)}</div>
@@ -223,7 +255,7 @@ function DemandeDetail() {
               ))}
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()} className="don-form">
+            <form onSubmit={handleDon} className="don-form">
               {typeDon === 'financier' && (
                 <>
                   <div className="amount-presets">
@@ -286,8 +318,8 @@ function DemandeDetail() {
                   <div className="form-group">
                     <label>DESCRIPTION (optionnel)</label>
                     <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
+                      value={descriptionDon}
+                      onChange={(e) => setDescriptionDon(e.target.value)}
                       placeholder="Plus de détails sur votre don matériel..."
                     />
                   </div>
@@ -319,15 +351,15 @@ function DemandeDetail() {
                   <div className="form-group">
                     <label>DÉTAILS (optionnel)</label>
                     <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
+                      value={descriptionDon}
+                      onChange={(e) => setDescriptionDon(e.target.value)}
                       placeholder="Informations complémentaires sur votre compétence..."
                     />
                   </div>
                 </>
               )}
 
-              <button type="button" className="btn-don" onClick={handleDon}>
+              <button type="submit" className="btn-don">
                 <FaDonate /> Proposer mon aide
               </button>
             </form>

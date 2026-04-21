@@ -1,160 +1,84 @@
-import React, { useState, useEffect } from 'react';
+// DemandeDetail.jsx – version définitive sans LanguageContext
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
-  FaArrowLeft,
-  FaMoneyBillWave,
-  FaBox,
-  FaGraduationCap,
-  FaHeart,
-  FaUsers,
-  FaCalendarAlt,
-  FaDonate,
-  FaCheckCircle
+  FaArrowLeft, FaMoneyBillWave, FaBox, FaGraduationCap, FaHeart,
+  FaDonate, FaCheckCircle, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaImage
 } from 'react-icons/fa';
-import './CampagneDetail.css';
+import './DemandeDetail.css';
 
-const CampagnesDetail = () => {
+function DemandeDetail() {
   const { id } = useParams();
-  const [campagne, setCampagne] = useState(null);
+  const { user } = useAuth();
+  const [demande, setDemande] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [donType, setDonType] = useState('financier');
+  const [typeDon, setTypeDon] = useState('financier');
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [customAmount, setCustomAmount] = useState('');
   const [quantite, setQuantite] = useState('');
   const [competence, setCompetence] = useState('');
   const [disponibilite, setDisponibilite] = useState('');
-  const [description, setDescription] = useState('');
+  const [descriptionDon, setDescriptionDon] = useState('');
   const [messageFinancier, setMessageFinancier] = useState('');
   const [message, setMessage] = useState(null);
-
   const presetAmounts = [10, 20, 50, 100];
-
-  const formatNumber = (num) => {
-    const number = Number(num);
-    if (isNaN(number)) return '0,00';
-    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ').replace('.', ',');
-  };
+  const formatNumber = (num) => Number(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
   useEffect(() => {
-    const fetchCampagne = async () => {
+    const fetchDemande = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/campagnes/${id}`);
-        if (!res.ok) throw new Error('Campagne non trouvée');
+        const res = await fetch(`http://localhost:3000/demandes/${id}`);
+        if (!res.ok) throw new Error('Demande non trouvée');
         const data = await res.json();
-        setCampagne(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+        setDemande(data);
+      } catch (err) { setError(err.message); } finally { setLoading(false); }
     };
-    fetchCampagne();
+    fetchDemande();
   }, [id]);
 
   useEffect(() => {
-    setSelectedAmount(null);
-    setCustomAmount('');
-    setQuantite('');
-    setCompetence('');
-    setDisponibilite('');
-    setDescription('');
-    setMessageFinancier('');
-    setMessage(null);
-  }, [donType]);
+    setSelectedAmount(null); setCustomAmount(''); setQuantite(''); setCompetence('');
+    setDisponibilite(''); setDescriptionDon(''); setMessageFinancier(''); setMessage(null);
+  }, [typeDon]);
 
   const handleDon = async (e) => {
     e.preventDefault();
     setMessage(null);
     const token = localStorage.getItem('token');
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!token) {
-      setMessage({ type: 'error', text: 'Vous devez être connecté pour faire un don.' });
-      return;
-    }
+    if (!user || !token) return setMessage({ type: 'error', text: 'Vous devez être connecté pour faire un don.' });
 
     let donData = {};
-    if (donType === 'financier') {
-      let montantVal = selectedAmount ? selectedAmount : parseFloat(customAmount);
-      if (isNaN(montantVal) || montantVal <= 0) {
-        setMessage({ type: 'error', text: 'Veuillez indiquer un montant valide.' });
-        return;
-      }
-      const fullDescription = `Don financier pour "${campagne.titre}"${messageFinancier ? ` | Message : ${messageFinancier}` : ''}`;
-      donData = {
-        id_donateur: user.id_utilisateur,
-        type_don: donType,
-        montant: montantVal,
-        description: fullDescription,
-        id_campagne: campagne.id_campagne
-      };
-    } else if (donType === 'materiel') {
-      if (!quantite.trim()) {
-        setMessage({ type: 'error', text: 'Veuillez renseigner la quantité.' });
-        return;
-      }
-      const descriptionComplete = `[Matériel] Quantité : ${quantite} | Détails : ${description}`;
-      donData = {
-        id_donateur: user.id_utilisateur,
-        type_don: donType,
-        montant: 0,
-        description: descriptionComplete,
-        id_campagne: campagne.id_campagne
-      };
+    if (typeDon === 'financier') {
+      let montantVal = selectedAmount || parseFloat(customAmount);
+      if (isNaN(montantVal) || montantVal <= 0) return setMessage({ type: 'error', text: 'Veuillez indiquer un montant valide.' });
+      donData = { id_donateur: user.id_utilisateur, type_don: typeDon, montant: montantVal, description: `Don financier pour "${demande.titre}"${messageFinancier ? ` | Message : ${messageFinancier}` : ''}`, id_demande: demande.id_demande };
+    } else if (typeDon === 'materiel') {
+      if (!quantite.trim()) return setMessage({ type: 'error', text: 'Veuillez renseigner la quantité.' });
+      donData = { id_donateur: user.id_utilisateur, type_don: typeDon, montant: 0, description: `[Matériel] Quantité : ${quantite} | Détails : ${descriptionDon}`, id_demande: demande.id_demande };
     } else {
-      if (!competence.trim() || !disponibilite.trim()) {
-        setMessage({ type: 'error', text: 'Veuillez renseigner la compétence proposée et la disponibilité.' });
-        return;
-      }
-      const descriptionComplete = `[Compétence] Compétence : ${competence} | Disponibilité : ${disponibilite} | Détails : ${description}`;
-      donData = {
-        id_donateur: user.id_utilisateur,
-        type_don: donType,
-        montant: 0,
-        description: descriptionComplete,
-        id_campagne: campagne.id_campagne
-      };
+      if (!competence.trim() || !disponibilite.trim()) return setMessage({ type: 'error', text: 'Veuillez renseigner la compétence proposée et la disponibilité.' });
+      donData = { id_donateur: user.id_utilisateur, type_don: typeDon, montant: 0, description: `[Compétence] Compétence : ${competence} | Disponibilité : ${disponibilite} | Détails : ${descriptionDon}`, id_demande: demande.id_demande };
     }
 
     try {
-      const res = await fetch('http://localhost:3000/dons', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(donData)
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur lors du don');
-      setMessage({ type: 'success', text: 'Votre don a été enregistré et sera validé par l’administrateur.' });
-      setSelectedAmount(null);
-      setCustomAmount('');
-      setQuantite('');
-      setCompetence('');
-      setDisponibilite('');
-      setDescription('');
-      setMessageFinancier('');
-    } catch (err) {
-      setMessage({ type: 'error', text: err.message });
-    }
+      const res = await fetch('http://localhost:3000/dons', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(donData) });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Erreur lors du don');
+      setMessage({ type: 'success', text: 'Votre contribution a été enregistrée et sera validée par l’administrateur.' });
+      setSelectedAmount(null); setCustomAmount(''); setQuantite(''); setCompetence(''); setDisponibilite(''); setDescriptionDon(''); setMessageFinancier('');
+    } catch (err) { setMessage({ type: 'error', text: err.message }); }
   };
 
-  if (loading) return <div className="loading">Chargement de la campagne...</div>;
+  if (loading) return <div className="loading">Chargement de la demande...</div>;
   if (error) return <div className="error-message">{error}</div>;
-  if (!campagne) return <div className="error-message">Campagne introuvable</div>;
+  if (!demande) return <div className="error-message">Demande introuvable</div>;
 
-  const collecte = Number(campagne.collecte) || 0;
-  const objectif = Number(campagne.objectif) || 0;
-  const isFinancial = campagne.type_campagne === 'financier';
-
-  const joursRestants = () => {
-    if (!campagne.date_fin) return 0;
-    const fin = new Date(campagne.date_fin);
-    const aujourdhui = new Date();
-    const diff = fin - aujourdhui;
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  };
+  const isFinancial = demande.type_demande === 'financier';
+  const collecte = Number(demande.collecte) || 0;
+  const objectif = Number(demande.objectif) || 0;
+  const joursRestants = () => Math.max(0, Math.ceil((new Date(demande.date_fin) - new Date()) / (1000 * 60 * 60 * 24)));
 
   const getTypeIcon = (type) => {
     switch (type) {
@@ -164,201 +88,77 @@ const CampagnesDetail = () => {
       default: return <FaHeart />;
     }
   };
-
-  const getTypeLabel = (type) => {
-    const types = {
-      financier: 'FINANCIER',
-      materiel: 'MATÉRIEL',
-      competences: 'COMPÉTENCE'
-    };
-    return types[type] || type.toUpperCase();
-  };
-
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'financier': return '#10b981';
-      case 'materiel': return '#3b82f6';
-      case 'competences': return '#8b5cf6';
-      default: return '#f59e0b';
-    }
-  };
+  const getTypeLabel = (type) => ({ financier: 'FINANCIER', materiel: 'MATÉRIEL', competences: 'COMPÉTENCE' }[type] || type.toUpperCase());
+  const getTypeColor = (type) => ({ financier: '#10b981', materiel: '#3b82f6', competences: '#8b5cf6' }[type] || '#f59e0b');
 
   return (
-    <div className="campagne-detail-container">
-      <Link to="/campagnes" className="back-link">
-        <FaArrowLeft /> Retour aux campagnes
-      </Link>
-
-      <div className="campagne-detail-card">
-        <div className="campagne-image-wrapper">
-          {campagne.image_path ? (
-            <img
-              src={`http://localhost:3000${campagne.image_path}`}
-              alt={campagne.titre}
-              className="campagne-detail-image"
-            />
-          ) : (
-            <div className="placeholder-image">Image non disponible</div>
-          )}
-          <div className="campagne-type-badge" style={{ backgroundColor: `${getTypeColor(campagne.type_campagne)}20`, color: getTypeColor(campagne.type_campagne) }}>
-            {getTypeIcon(campagne.type_campagne)} {getTypeLabel(campagne.type_campagne)}
+    <div className="demande-detail-container">
+      <Link to="/missions" className="back-link"><FaArrowLeft /> Retour aux missions</Link>
+      <div className="demande-detail-card">
+        <div className="demande-image-wrapper">
+          {demande.image_path ? <img src={`http://localhost:3000${demande.image_path}`} alt={demande.titre} className="demande-detail-image" />
+            : <div className="placeholder-image"><FaImage className="placeholder-icon" /><span>Image non disponible</span></div>}
+          <div className="demande-type-badge" style={{ backgroundColor: `${getTypeColor(demande.type_demande)}20`, color: getTypeColor(demande.type_demande) }}>
+            {getTypeIcon(demande.type_demande)} {getTypeLabel(demande.type_demande)}
           </div>
         </div>
-
-        <div className="campagne-content">
-          <h1>{campagne.titre}</h1>
-          <div className="campagne-description">{campagne.description}</div>
-
+        <div className="demande-content">
+          <h1>{demande.titre || 'Sans titre'}</h1>
+          <div className="demande-description">{demande.description || ''}</div>
+          <div className="demande-meta">
+            {demande.ville && <p><FaMapMarkerAlt /> {demande.ville}</p>}
+            <p><FaCalendarAlt /> Date limite : {new Date(demande.date_fin).toLocaleDateString('fr-FR')} ({joursRestants()} jours restants)</p>
+          </div>
           {isFinancial && (
-            <div className="campagne-progress">
-              <div className="progress-stats">
-                <span className="collected">{formatNumber(collecte)} TND</span>
-                <span className="goal">Objectif : {formatNumber(objectif)} TND</span>
-              </div>
+            <div className="progress-section">
+              <div className="progress-stats"><span className="collected">{formatNumber(collecte)} TND</span><span className="goal">Objectif : {formatNumber(objectif)} TND</span></div>
               <progress value={collecte} max={objectif} />
               <div className="progress-percent">{((collecte / objectif) * 100).toFixed(0)}%</div>
-              <div className="extra-stats">
-                <span><FaUsers /> {Number(campagne.nombre_donateurs) || 0} donateurs</span>
-                <span><FaCalendarAlt /> {joursRestants()} jours restants</span>
-              </div>
+              <div className="extra-stats"><span><FaUsers /> {demande.nombre_donateurs || 0} donateurs</span></div>
             </div>
           )}
-
           <div className="don-section">
-            <h3>Faire un don</h3>
+            <h3>Proposer votre aide</h3>
             <div className="don-type-tiles">
               {['financier', 'materiel', 'competences'].map(type => (
-                <div
-                  key={type}
-                  className={`don-tile ${donType === type ? 'selected' : ''}`}
-                  onClick={() => setDonType(type)}
-                  style={{ borderColor: donType === type ? getTypeColor(type) : '#e9ecef' }}
-                >
+                <div key={type} className={`don-tile ${typeDon === type ? 'selected' : ''}`} data-type={type} onClick={() => setTypeDon(type)}>
                   <div className="tile-icon" style={{ color: getTypeColor(type) }}>{getTypeIcon(type)}</div>
                   <div className="tile-label">{getTypeLabel(type)}</div>
                 </div>
               ))}
             </div>
-
             <form onSubmit={handleDon} className="don-form">
-              {donType === 'financier' && (
+              {typeDon === 'financier' && (
                 <>
                   <div className="amount-presets">
-                    {presetAmounts.map(amount => (
-                      <button
-                        type="button"
-                        key={amount}
-                        className={`preset-amount ${selectedAmount === amount ? 'active' : ''}`}
-                        onClick={() => {
-                          setSelectedAmount(amount);
-                          setCustomAmount('');
-                        }}
-                      >
-                        {amount} TND
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      className={`preset-amount ${!selectedAmount && customAmount ? 'active' : ''}`}
-                      onClick={() => setSelectedAmount(null)}
-                    >
-                      Autre
-                    </button>
+                    {presetAmounts.map(amount => <button type="button" key={amount} className={`preset-amount ${selectedAmount === amount ? 'active' : ''}`} onClick={() => { setSelectedAmount(amount); setCustomAmount(''); }}>{amount} TND</button>)}
+                    <button type="button" className={`preset-amount ${!selectedAmount && customAmount ? 'active' : ''}`} onClick={() => setSelectedAmount(null)}>Autre</button>
                   </div>
-                  {!selectedAmount && (
-                    <div className="form-group">
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={customAmount}
-                        onChange={(e) => setCustomAmount(e.target.value)}
-                        placeholder="Montant personnalisé"
-                        required={!selectedAmount}
-                      />
-                    </div>
-                  )}
-                  <div className="form-group">
-                    <label>MESSAGE (optionnel)</label>
-                    <textarea
-                      value={messageFinancier}
-                      onChange={(e) => setMessageFinancier(e.target.value)}
-                      placeholder="Un petit message pour l'association..."
-                    />
-                  </div>
+                  {!selectedAmount && <div className="form-group"><input type="number" step="0.01" value={customAmount} onChange={(e) => setCustomAmount(e.target.value)} placeholder="Montant personnalisé" required /></div>}
+                  <div className="form-group"><label>MESSAGE (optionnel)</label><textarea value={messageFinancier} onChange={(e) => setMessageFinancier(e.target.value)} placeholder="Un petit message pour le bénéficiaire..." /></div>
                 </>
               )}
-
-              {donType === 'materiel' && (
+              {typeDon === 'materiel' && (
                 <>
-                  <div className="form-group">
-                    <label>QUANTITÉ *</label>
-                    <input
-                      type="text"
-                      value={quantite}
-                      onChange={(e) => setQuantite(e.target.value)}
-                      required
-                      placeholder="Ex: 10 kg de riz, 5 couvertures..."
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>DESCRIPTION (optionnel)</label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Plus de détails sur votre don matériel..."
-                    />
-                  </div>
+                  <div className="form-group"><label>QUANTITÉ *</label><input type="text" value={quantite} onChange={(e) => setQuantite(e.target.value)} required placeholder="Ex: 10 kg de riz, 5 cahiers..." /></div>
+                  <div className="form-group"><label>DESCRIPTION (optionnel)</label><textarea value={descriptionDon} onChange={(e) => setDescriptionDon(e.target.value)} placeholder="Plus de détails sur votre don matériel..." /></div>
                 </>
               )}
-
-              {donType === 'competences' && (
+              {typeDon === 'competences' && (
                 <>
-                  <div className="form-group">
-                    <label>COMPÉTENCE PROPOSÉE *</label>
-                    <input
-                      type="text"
-                      value={competence}
-                      onChange={(e) => setCompetence(e.target.value)}
-                      required
-                      placeholder="Ex: Comptabilité, Cours de soutien, Bricolage..."
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>DISPONIBILITÉ *</label>
-                    <input
-                      type="text"
-                      value={disponibilite}
-                      onChange={(e) => setDisponibilite(e.target.value)}
-                      required
-                      placeholder="Quand et comment pouvez-vous aider ?"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>DÉTAILS (optionnel)</label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Informations complémentaires sur votre compétence..."
-                    />
-                  </div>
+                  <div className="form-group"><label>COMPÉTENCE PROPOSÉE *</label><input type="text" value={competence} onChange={(e) => setCompetence(e.target.value)} required placeholder="Ex: Cours de maths, aide administrative..." /></div>
+                  <div className="form-group"><label>DISPONIBILITÉ *</label><input type="text" value={disponibilite} onChange={(e) => setDisponibilite(e.target.value)} required placeholder="Quand et comment pouvez-vous aider ?" /></div>
+                  <div className="form-group"><label>DÉTAILS (optionnel)</label><textarea value={descriptionDon} onChange={(e) => setDescriptionDon(e.target.value)} placeholder="Informations complémentaires sur votre compétence..." /></div>
                 </>
               )}
-
-              <button type="submit" className="btn-don">
-                <FaDonate /> Faire un don
-              </button>
+              <button type="submit" className="btn-don"><FaDonate /> Proposer mon aide</button>
             </form>
-
-            {message && (
-              <div className={`message ${message.type}`}>
-                <FaCheckCircle /> {message.text}
-              </div>
-            )}
+            {message && <div className={`message ${message.type}`}><FaCheckCircle /> {message.text}</div>}
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default CampagnesDetail;
+export default DemandeDetail;

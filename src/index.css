@@ -1,68 +1,74 @@
+/* Variables globales pour le MODE SOMBRE (Par défaut et très élégant) */
 :root {
-  --primary: #2563eb;
-  --primary-light: #dbafea;
-  --primary-dark: #1e40af;
-  --accent: #3b82f6;
-  --bg-page: #eff6ff;
-  --text-dark: #1f2937;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-page);
-  color: var(--text-dark);
-  line-height: 1.5;
-  margin: 0;
+  --bg-color: #0f172a;          /* Bleu très sombre et profond */
+  --text-color: #f8fafc;
   
+  /* Glassmorphism et cartes */
+  --card-bg: rgba(30, 41, 59, 0.6);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --card-blur: blur(12px);
+
+  /* Couleurs principales */
+  --primary: #f97316;           /* Orange lumineux moderne */
+  --primary-dark: #ea580c;
+  
+  /* Navbar */
+  --navbar-bg: rgba(15, 23, 42, 0.85); /* Navbar translucide */
+  --nav-link-color: #f1f5f9;
+  --greeting-color: #e2e8f0;
+
+  /* Typographie optionnelle */
+  --gray-light: #1e293b;
+  --gray-dark: #cbd5e1;
 }
-html, body, #root {
-  height: auto;
-  overflow: auto !important;
-}
-/* ===== Thème clair (par défaut) ===== */
-:root {
+
+/* Surcharge pour le MODE CLAIR (Activé par body.light-mode) */
+body.light-mode {
   --bg-color: #f8fafc;
-  --text-color: #333;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-  --primary: #f57c10;
+  --text-color: #1e293b;
+  
+  /* Cartes classiques mais modernes */
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --border-color: rgba(0, 0, 0, 0.05);
+  --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+  --card-blur: blur(8px);
+
+  /* Couleurs principales */
+  --primary: #f57c00;
   --primary-dark: #e06d00;
-  --gray-light: #f0f4f8;
-  --gray-dark: #2d3e50;
-  --navbar-bg: #ffffff;
-  --nav-link-color: #444;
-  --greeting-color: #333;
+  
+  /* Navbar */
+  --navbar-bg: rgba(255, 255, 255, 0.95);
+  --nav-link-color: #475569;
+  --greeting-color: #334155;
+
+  --gray-light: #f1f5f9;
+  --gray-dark: #475569;
 }
 
-/* ===== Thème sombre ===== */
-[data-theme="dark"] {
-  --bg-color: #1a1a1a;
-  --text-color: #f0f0f0;
-  --card-bg: #2d2d2d;
-  --border-color: #444;
-  --primary: #ff9800;
-  --primary-dark: #e68900;
-  --gray-light: #3a3a3a;
-  --gray-dark: #cccccc;
-  --navbar-bg: #2d2d2d;
-  --nav-link-color: #f0f0f0;
-  --greeting-color: #f0f0f0;
-}
-
-/* ===== Application globale ===== */
+/* ===== Application Globale ===== */
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
+  transition: background-color 0.4s ease, color 0.4s ease; /* Animation fluide de changement de thème */
+}
+
+html, body, #root {
+  height: auto;
+  overflow: auto !important;
 }
 
 /* ===== Adaptations pour la navbar ===== */
 .navbar {
   background-color: var(--navbar-bg) !important;
-  border-bottom-color: var(--primary) !important;
+  border-bottom-color: var(--border-color) !important;
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  transition: background-color 0.4s ease;
 }
 
 .nav-link {
@@ -74,7 +80,40 @@ body {
 }
 
 .theme-toggle {
-  color: var(--nav-link-color) !important;
+  color: var(--primary) !important;
 }
 
-/* Les autres composants devront progressivement utiliser les variables */
+/* Utilitaires globaux pour Glassmorphism (Cartes) */
+.glass-card, 
+.carte, 
+.valeur-card {
+  background: var(--card-bg) !important;
+  backdrop-filter: var(--card-blur);
+  -webkit-backdrop-filter: var(--card-blur);
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--card-shadow) !important;
+  color: var(--text-color);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              box-shadow 0.3s ease, border-color 0.3s ease, background 0.4s ease !important;
+}
+
+/* Animation Hover Moderne */
+.glass-card:hover,
+.carte:hover,
+.valeur-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--primary) !important;
+  box-shadow: 0 15px 40px rgba(249, 115, 22, 0.15) !important; /* Lueur orange */
+}
+
+/* Effets et bordures lumineuses sur formulaires / inputs (si tu en as) */
+input, select, textarea {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  outline: none;
+}

@@ -14,6 +14,8 @@ const Inscriptions = () => {
   const [prenom, setPrenom] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [ville, setVille] = useState('');
+  const [preferences, setPreferences] = useState([]); // tableau de tags
   const [photoFile, setPhotoFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
@@ -62,11 +64,7 @@ const Inscriptions = () => {
   };
 
   const triggerFileInput = () => fileInputRef.current.click();
-
-  const openZoom = () => {
-    if (preview) setShowZoom(true);
-  };
-
+  const openZoom = () => { if (preview) setShowZoom(true); };
   const closeZoom = () => setShowZoom(false);
 
   const deletePhoto = (e) => {
@@ -75,6 +73,15 @@ const Inscriptions = () => {
     setPreview(null);
     setShowZoom(false);
     fileInputRef.current.value = '';
+  };
+
+  const handlePreferenceChange = (e) => {
+    const options = e.target.options;
+    const selected = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) selected.push(options[i].value);
+    }
+    setPreferences(selected);
   };
 
   const handleSubmit = async (e) => {
@@ -93,22 +100,18 @@ const Inscriptions = () => {
     formData.append('email', email);
     formData.append('mot_de_passe', password);
     formData.append('role', roleBDD);
-    if (photoFile) {
-      formData.append('avatar', photoFile);
-    }
+    if (photoFile) formData.append('avatar', photoFile);
+    // Ajout des nouveaux champs
+    formData.append('ville', ville);
+    formData.append('preferences', JSON.stringify(preferences));
 
     try {
       const response = await fetch(`${API_BASE}/api/register`, {
         method: 'POST',
         body: formData,
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de l'inscription");
-      }
-
+      if (!response.ok) throw new Error(data.error || "Erreur lors de l'inscription");
       localStorage.setItem('token', data.token);
       login(data.user);
       navigate('/accueil');
@@ -125,43 +128,25 @@ const Inscriptions = () => {
         <h1 className="card-title">Créer un compte</h1>
         <p className="card-subtitle">Choisissez votre rôle pour commencer</p>
 
-        {/* Avatar avec caméra */}
+        {/* Avatar */}
         <div className="avatar-container">
           <div className="avatar-wrapper">
-            <div
-              className={`avatar-circle-large ${preview ? 'has-photo' : ''}`}
-              onClick={openZoom}
-            >
-              {preview ? (
-                <img src={preview} alt="avatar" className="avatar-preview" />
-              ) : (
-                <FaUser className="avatar-icon-large" />
-              )}
+            <div className={`avatar-circle-large ${preview ? 'has-photo' : ''}`} onClick={openZoom}>
+              {preview ? <img src={preview} alt="avatar" className="avatar-preview" /> : <FaUser className="avatar-icon-large" />}
               <div className="camera-badge" onClick={(e) => { e.stopPropagation(); triggerFileInput(); }}>
                 <FaCamera className="badge-icon" />
               </div>
             </div>
           </div>
           <span className="avatar-upload-text">Ajouter une photo (optionnel)</span>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handlePhotoChange}
-            accept=".jpg,.jpeg,.png,.pdf"
-            style={{ display: 'none' }}
-          />
+          <input type="file" ref={fileInputRef} onChange={handlePhotoChange} accept=".jpg,.jpeg,.png,.pdf" style={{ display: 'none' }} />
         </div>
 
-        {/* Modal de zoom centré avec poubelle */}
         {showZoom && preview && (
           <div className="zoom-overlay" onClick={closeZoom}>
             <div className="zoom-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="zoom-circle">
-                <img src={preview} alt="zoom" />
-              </div>
-              <button className="delete-btn" onClick={deletePhoto} title="Supprimer la photo">
-                <FaTrash />
-              </button>
+              <div className="zoom-circle"><img src={preview} alt="zoom" /></div>
+              <button className="delete-btn" onClick={deletePhoto} title="Supprimer la photo"><FaTrash /></button>
               <button className="close-btn" onClick={closeZoom}>×</button>
             </div>
           </div>
@@ -171,20 +156,12 @@ const Inscriptions = () => {
           <span className="role-label">VOTRE RÔLE</span>
           <div className="role-options">
             {roles.map((role) => (
-              <div
-                key={role.id}
-                className={`role-option ${selectedRole === role.id ? "selected" : ""}`}
-                onClick={() => setSelectedRole(role.id)}
-              >
+              <div key={role.id} className={`role-option ${selectedRole === role.id ? "selected" : ""}`} onClick={() => setSelectedRole(role.id)}>
                 <div className="role-content">
-                  <span className="role-title">
-                    {role.icon} {role.label}
-                  </span>
+                  <span className="role-title">{role.icon} {role.label}</span>
                   <span className="role-desc">{role.desc}</span>
                 </div>
-                <div className="role-check">
-                  <span className={`custom-radio ${selectedRole === role.id ? 'selected' : ''}`} />
-                </div>
+                <div className="role-check"><span className={`custom-radio ${selectedRole === role.id ? 'selected' : ''}`} /></div>
               </div>
             ))}
           </div>
@@ -193,44 +170,43 @@ const Inscriptions = () => {
         <form onSubmit={handleSubmit} className="inscription-form">
           <div className="form-group">
             <label>NOM</label>
-            <input
-              type="text"
-              placeholder="Votre nom"
-              value={nom}
-              onChange={(e) => setNom(e.target.value)}
-              required
-            />
+            <input type="text" placeholder="Votre nom" value={nom} onChange={(e) => setNom(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>PRÉNOM</label>
-            <input
-              type="text"
-              placeholder="Votre prénom"
-              value={prenom}
-              onChange={(e) => setPrenom(e.target.value)}
-              required
-            />
+            <input type="text" placeholder="Votre prénom" value={prenom} onChange={(e) => setPrenom(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>EMAIL</label>
-            <input
-              type="email"
-              placeholder="votre@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <input type="email" placeholder="votre@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>MOT DE PASSE</label>
-            <input
-              type="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <input type="password" placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
+
+          {/* Nouveau champ : Ville */}
+          <div className="form-group">
+            <label>VILLE (optionnel)</label>
+            <input type="text" placeholder="Votre ville" value={ville} onChange={(e) => setVille(e.target.value)} />
+          </div>
+
+          {/* Nouveau champ : Préférences (tags) */}
+          <div className="form-group">
+            <label>VOS CENTRES D'INTÉRÊT (optionnel)</label>
+            <select multiple value={preferences} onChange={handlePreferenceChange} style={{ height: '100px' }}>
+              <option value="éducation">Éducation</option>
+              <option value="santé">Santé</option>
+              <option value="environnement">Environnement</option>
+              <option value="urgence">Urgence</option>
+              <option value="eau">Eau</option>
+              <option value="nourriture">Nourriture</option>
+              <option value="enfants">Enfants</option>
+              <option value="personnes_agees">Personnes âgées</option>
+            </select>
+            <small>Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs</small>
+          </div>
+
           <button type="submit" className="btn-inscription" disabled={loading}>
             {loading ? 'Inscription...' : "S'inscrire"}
           </button>
@@ -240,9 +216,7 @@ const Inscriptions = () => {
         <p className="connexion-lien">
           Déjà un compte ? <Link to="/connexion">Se connecter</Link>
         </p>
-        <Link to="/accueil" className="retour-accueil">
-          ← Retour à l'accueil
-        </Link>
+        <Link to="/accueil" className="retour-accueil">← Retour à l'accueil</Link>
       </div>
     </div>
   );

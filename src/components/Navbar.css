@@ -1,27 +1,39 @@
-/* ===== NAVBAR ===== */
+/* ===== NAVBAR PRINCIPALE ===== */
 .navbar {
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 0.5rem 2rem;
-  border-bottom: 2px solid #fff;}
-
+  border-bottom: 1px solid #e2e8f0;
+}
 
 .nav-container {
-  max-width: 1400px;
+  max-width: 1280px;
   margin: 0 auto;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 1rem;
 }
 
+/* Logo */
 .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 1.8rem;
   font-weight: 800;
   color: #f57c10;
   text-decoration: none;
 }
 
+.logo-icon {
+  font-size: 1.4rem;
+  color: #f57c00;
+}
+
+/* Menu de navigation */
 .nav-menu {
   display: flex;
   list-style: none;
@@ -59,10 +71,121 @@
   border-radius: 3px 3px 0 0;
 }
 
+/* Zone droite (thème, langue, notifications, utilisateur) */
 .nav-right {
   display: flex;
   align-items: center;
   gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+/* Bouton thème */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: #444;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  transition: color 0.2s;
+}
+
+.theme-toggle:hover {
+  color: blanchedalmond;
+}
+
+/* ===== SÉLECTEUR DE LANGUE (LanguageSwitcher) ===== */
+.lang-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 40px;
+  color: #444;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.lang-toggle:hover {
+  background: #f1f5f9;
+  transform: scale(1.02);
+}
+
+.lang-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 150px;
+  overflow: hidden;
+  animation: fadeInDown 0.2s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lang-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: #1e293b;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.lang-item:hover {
+  background: #f8fafc;
+}
+
+.lang-item.active {
+  background: #f57c10;
+  color: white;
+}
+
+.flag {
+  font-size: 1.2rem;
+}
+
+/* Support RTL pour le menu de langue */
+[dir="rtl"] .lang-menu {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .lang-item {
+  text-align: right;
+}
+
+[dir="rtl"] .lang-toggle {
+  flex-direction: row-reverse;
 }
 
 /* ===== UTILISATEUR CONNECTÉ ===== */
@@ -72,18 +195,30 @@
   gap: 0.5rem;
 }
 
-/* Avatar exactement comme dans la page d'inscription */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.profile-link:hover {
+  opacity: 0.8;
+}
+
 .avatar-small {
   width: 35px;
   height: 35px;
-  border-radius: 50%; /* cercle parfait */
-  background: #F0F4F8; /* gris très clair */
+  border-radius: 50%;
+  background: #f0f4f8;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   border: 2px solid white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* ombre légère */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s;
 }
 
@@ -93,7 +228,7 @@
 
 .avatar-icon-small {
   font-size: 1.3rem;
-  color: #2d3e50; /* gris foncé pour la silhouette */
+  color: #2d3e50;
 }
 
 .avatar-img {
@@ -106,7 +241,6 @@
   font-weight: 500;
   color: #333;
   font-size: 0.95rem;
-  margin-right: 0.5rem;
   transition: color 0.2s;
 }
 
@@ -114,7 +248,7 @@
   color: #f57c10;
 }
 
-/* ===== BOUTONS ORANGES ===== */
+/* Boutons orange */
 .btn-orange {
   background-color: #f57c10;
   color: white;
@@ -138,69 +272,6 @@
   transform: scale(1.02);
   box-shadow: 0 6px 12px rgba(245, 124, 16, 0.35);
 }
-/* Bouton de bascule de thème */
-.theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  color: var(--nav-link-color, #444);
-  display: flex;
-  align-items: center;
-  padding: 0 0.5rem;
-  transition: color 0.2s;
-}
-
-.theme-toggle:hover {
-  color: var(--primary, #f57c10);
-}
-.theme-toggle {
-  color: #f57c10; /* orange */
-}
-.theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  color: #444; /* ou var(--nav-link-color) */
-  display: flex;
-  align-items: center;
-  padding: 0 0.5rem;
-  transition: color 0.2s;
-}
-
-.theme-toggle:hover {
-  color: #f57c10; /* ou var(--primary) */
-}
-/* Lien vers le profil */
-.profile-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  color: inherit;
-  transition: opacity 0.2s;
-}
-
-.profile-link:hover {
-  opacity: 0.8;
-}
-
-/* Ajustement du nom pour qu'il ne soit pas souligné */
-.nav-greeting {
-  font-weight: 500;
-  color: #333;
-  font-size: 0.95rem;
-  transition: color 0.2s;
-}
-
-.nav-greeting:hover {
-  color: #f57c10;
-}
-.auth-buttons {
-  display: flex;
-  gap: 0.8rem;
-}
 
 .btn-outline {
   background: transparent;
@@ -212,7 +283,54 @@
   background: #f57c10;
   color: white;
 }
-.navbar {
-    background-color: var(--navbar-bg) !important;
-    border-bottom-color: #fff !important;
+
+.auth-buttons {
+  display: flex;
+  gap: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .nav-menu {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .nav-right {
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+.navbar,
+.nav-container,
+.nav-right {
+  overflow: visible !important;
+  position: relative;
+}
+.navbar,
+.nav-container,
+.nav-right {
+  overflow: visible !important;
+  position: relative;
+  z-index: auto;
+}
+.navbar,
+.nav-container,
+.nav-right {
+  overflow: visible !important;
+  position: relative;
+}
+.navbar,
+.nav-container,
+.nav-right {
+  overflow: visible !important;
+  position: relative;
 }

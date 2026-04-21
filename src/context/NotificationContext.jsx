@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import axios from "axios";
 
 const NotificationContext = createContext();
@@ -11,8 +11,19 @@ export const NotificationProvider = ({ children, userId }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const isMounted = useRef(true);
 
-  // Charger les notifications depuis l'API
+  // Helper icône
+  const getIconForType = (type) => {
+    switch (type) {
+      case "donation": return "💰";
+      case "demande": return "📋";
+      case "campagne": return "🎯";
+      case "goal": return "🏆";
+      default: return "🔔";
+    }
+  };
+
   const fetchNotifications = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
@@ -22,8 +33,8 @@ export const NotificationProvider = ({ children, userId }) => {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 100 },
       });
+      if (!isMounted.current) return;
       const data = res.data.notifications;
-      // Transformer les données : `read` boolean, `timestamp` = date_envoi
       const formatted = data.map((n) => ({
         id: n.id_notification,
         type: n.type,
@@ -40,18 +51,17 @@ export const NotificationProvider = ({ children, userId }) => {
     } catch (err) {
       console.error("Erreur chargement notifications :", err);
     } finally {
-      setLoading(false);
+      if (isMounted.current) setLoading(false);
     }
   }, [userId]);
 
-  // Recharger quand userId change
   useEffect(() => {
+    isMounted.current = true;
     fetchNotifications();
+    return () => { isMounted.current = false; };
   }, [fetchNotifications]);
 
-  // Ajouter une notification (utilisée par le listener)
   const addNotification = useCallback((notification) => {
-    // Éviter les doublons si l'id existe déjà
     setNotifications((prev) => {
       if (prev.some((n) => n.id === notification.id)) return prev;
       return [notification, ...prev];
@@ -61,7 +71,6 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   }, []);
 
-  // Marquer une notification comme lue (API + local)
   const markAsRead = useCallback(async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -77,7 +86,6 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   }, []);
 
-  // Marquer toutes comme lues
   const markAllAsRead = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -91,7 +99,6 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   }, []);
 
-  // Effacer tout (uniquement du state local)
   const clearNotifications = useCallback(() => {
     setNotifications([]);
     setUnreadCount(0);
@@ -114,14 +121,3 @@ export const NotificationProvider = ({ children, userId }) => {
     </NotificationContext.Provider>
   );
 };
-
-// Helper pour l'icône
-function getIconForType(type) {
-  switch (type) {
-    case "donation": return "💰";
-    case "demande": return "📋";
-    case "campagne": return "🎯";
-    case "goal": return "🏆";
-    default: return "🔔";
-  }
-}
