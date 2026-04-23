@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaCamera, FaTrash, FaUser, FaEnvelope, FaKey, FaCheck } from 'react-icons/fa';
 import './Profil.css';
 
 const Profil = () => {
+  const { t } = useTranslation();
   const { user, login, logout } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -24,15 +26,15 @@ const Profil = () => {
     const hasLetter = /[A-Za-z]/.test(pwd);
     const hasNumber = /\d/.test(pwd);
     if (pwd.length === 0) return { valid: false, message: '' };
-    if (pwd.length < minLength) return { valid: false, message: `Au moins ${minLength} caractères` };
-    if (!hasLetter) return { valid: false, message: 'Au moins une lettre' };
-    if (!hasNumber) return { valid: false, message: 'Au moins un chiffre' };
-    return { valid: true, message: 'Mot de passe fort ✓' };
+    if (pwd.length < minLength) return { valid: false, message: t('profil.mdp_min_caracteres', `Au moins ${minLength} caractères`) };
+    if (!hasLetter) return { valid: false, message: t('profil.mdp_lettre', 'Au moins une lettre') };
+    if (!hasNumber) return { valid: false, message: t('profil.mdp_chiffre', 'Au moins un chiffre') };
+    return { valid: true, message: t('profil.mdp_fort', 'Mot de passe fort ✓') };
   };
 
   const hasChanges = () => (formData.nom !== originalUser.nom || formData.prenom !== originalUser.prenom || formData.email !== originalUser.email);
   const isPasswordValid = () => (passwordData.ancien.trim() !== '' && passwordData.nouveau.trim() !== '' && passwordData.nouveau === passwordData.confirm && passwordStrength.valid);
-  const handleUnauthorized = () => { logout(); navigate('/connexion'); setMessage({ type: 'error', text: 'Session expirée, veuillez vous reconnecter.' }); };
+  const handleUnauthorized = () => { logout(); navigate('/connexion'); setMessage({ type: 'error', text: t('profil.session_expiree', 'Session expirée, veuillez vous reconnecter.') }); };
 
   useEffect(() => {
     if (!user) { navigate('/connexion'); return; }
@@ -76,11 +78,11 @@ const Profil = () => {
       });
       if (res.status === 401) { handleUnauthorized(); return; }
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur upload');
+      if (!res.ok) throw new Error(data.error || t('profil.erreur_upload', 'Erreur upload'));
       const updatedUser = { ...user, avatar: data.avatar };
       const token = localStorage.getItem('token');
       login(token, updatedUser);
-      setMessage({ type: 'success', text: 'Photo mise à jour' });
+      setMessage({ type: 'success', text: t('profil.photo_mise_a_jour', 'Photo mise à jour') });
       setAvatarFile(null);
     } catch (err) { console.error(err); setMessage({ type: 'error', text: err.message }); } finally { setUploading(false); }
   };
@@ -99,10 +101,10 @@ const Profil = () => {
       });
       if (res.status === 401) { handleUnauthorized(); return; }
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur mise à jour');
+      if (!res.ok) throw new Error(data.error || t('profil.erreur_mise_a_jour', 'Erreur mise à jour'));
       login(token, data);
       setOriginalUser({ nom: data.nom, prenom: data.prenom, email: data.email });
-      setMessage({ type: 'success', text: 'Informations mises à jour' });
+      setMessage({ type: 'success', text: t('profil.infos_mises_a_jour', 'Informations mises à jour') });
     } catch (err) { console.error(err); setMessage({ type: 'error', text: err.message }); } finally { setLoading(false); }
   };
 
@@ -120,8 +122,8 @@ const Profil = () => {
       });
       if (res.status === 401) { handleUnauthorized(); return; }
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur changement mot de passe');
-      setMessage({ type: 'success', text: 'Mot de passe modifié' });
+      if (!res.ok) throw new Error(data.error || t('profil.erreur_changement_mdp', 'Erreur changement mot de passe'));
+      setMessage({ type: 'success', text: t('profil.mdp_modifie', 'Mot de passe modifié') });
       setPasswordData({ ancien: '', nouveau: '', confirm: '' });
       setPasswordStrength({ valid: false, message: '' });
     } catch (err) { console.error(err); setMessage({ type: 'error', text: err.message }); } finally { setLoading(false); }
@@ -131,45 +133,48 @@ const Profil = () => {
 
   return (
     <div className="profil-container">
-      <div className="profil-header"><h1>Mon Profil</h1><p className="subtitle">Gérez vos informations personnelles et votre sécurité</p></div>
+      <div className="profil-header">
+        <h1>{t('profil.titre', 'Mon Profil')}</h1>
+        <p className="subtitle">{t('profil.sous_titre', 'Gérez vos informations personnelles et votre sécurité')}</p>
+      </div>
       {message.text && <div className={`message ${message.type}`}>{message.text}</div>}
       <div className="profil-grid">
         <div className="avatar-card">
-          <h2>Photo de profil</h2>
+          <h2>{t('profil.photo_profil', 'Photo de profil')}</h2>
           <div className="avatar-wrapper">
             <div className={`avatar-circle ${avatarPreview ? 'has-photo' : ''}`} onClick={openZoom}>
-              {avatarPreview ? <img src={avatarPreview} alt="avatar" className="avatar-preview" /> : <FaUser className="avatar-icon" />}
+              {avatarPreview ? <img src={avatarPreview} alt={t('profil.avatar', 'avatar')} className="avatar-preview" /> : <FaUser className="avatar-icon" />}
               <div className="camera-badge" onClick={(e) => { e.stopPropagation(); triggerFileInput(); }}><FaCamera /></div>
             </div>
-            {avatarFile && <button className="btn-avatar-save" onClick={handleAvatarUpload} disabled={uploading}>{uploading ? 'Enregistrement...' : 'Enregistrer la photo'}</button>}
+            {avatarFile && <button className="btn-avatar-save" onClick={handleAvatarUpload} disabled={uploading}>{uploading ? t('common.chargement', 'Enregistrement...') : t('profil.enregistrer_photo', 'Enregistrer la photo')}</button>}
           </div>
-          <p className="avatar-hint">Cliquez sur l'icône caméra pour modifier</p>
+          <p className="avatar-hint">{t('profil.clic_camera', 'Cliquez sur l’icône caméra pour modifier')}</p>
           <input type="file" ref={fileInputRef} onChange={handlePhotoChange} accept=".jpg,.jpeg,.png" style={{ display: 'none' }} />
         </div>
         <div className="info-column">
           <div className="info-card">
-            <h2>Informations personnelles</h2>
+            <h2>{t('profil.informations_personnelles', 'Informations personnelles')}</h2>
             <form onSubmit={handleSubmitInfo}>
-              <div className="form-group"><label>NOM</label><input type="text" name="nom" value={formData.nom} onChange={handleChange} required /></div>
-              <div className="form-group"><label>PRÉNOM</label><input type="text" name="prenom" value={formData.prenom} onChange={handleChange} required /></div>
-              <div className="form-group"><label>EMAIL</label><div className="input-with-icon"><FaEnvelope className="input-icon" /><input type="email" name="email" value={formData.email} onChange={handleChange} required /></div></div>
+              <div className="form-group"><label>{t('profil.nom', 'NOM')}</label><input type="text" name="nom" value={formData.nom} onChange={handleChange} required /></div>
+              <div className="form-group"><label>{t('profil.prenom', 'PRÉNOM')}</label><input type="text" name="prenom" value={formData.prenom} onChange={handleChange} required /></div>
+              <div className="form-group"><label>{t('profil.email', 'EMAIL')}</label><div className="input-with-icon"><FaEnvelope className="input-icon" /><input type="email" name="email" value={formData.email} onChange={handleChange} required /></div></div>
               <div className="form-actions">
-                <button type="submit" className="btn-primary" disabled={!hasChanges() || loading}>{loading ? 'Mise à jour...' : 'Mettre à jour'}</button>
-                {hasChanges() && <button type="button" className="btn-cancel" onClick={handleCancel}>Annuler</button>}
+                <button type="submit" className="btn-primary" disabled={!hasChanges() || loading}>{loading ? t('common.chargement', 'Mise à jour...') : t('profil.mettre_a_jour', 'Mettre à jour')}</button>
+                {hasChanges() && <button type="button" className="btn-cancel" onClick={handleCancel}>{t('common.annuler', 'Annuler')}</button>}
               </div>
             </form>
           </div>
           <div className="security-card">
-            <h2>Sécurité</h2>
+            <h2>{t('profil.securite', 'Sécurité')}</h2>
             <form onSubmit={handleSubmitPassword}>
-              <div className="form-group"><label>ANCIEN MOT DE PASSE</label><div className="input-with-icon"><FaKey className="input-icon" /><input type="password" name="ancien" value={passwordData.ancien} onChange={handlePasswordChange} required /></div></div>
-              <div className="form-group"><label>NOUVEAU MOT DE PASSE</label><input type="password" name="nouveau" value={passwordData.nouveau} onChange={handlePasswordChange} required />
+              <div className="form-group"><label>{t('profil.ancien_mdp', 'ANCIEN MOT DE PASSE')}</label><div className="input-with-icon"><FaKey className="input-icon" /><input type="password" name="ancien" value={passwordData.ancien} onChange={handlePasswordChange} required /></div></div>
+              <div className="form-group"><label>{t('profil.nouveau_mdp', 'NOUVEAU MOT DE PASSE')}</label><input type="password" name="nouveau" value={passwordData.nouveau} onChange={handlePasswordChange} required />
                 {passwordData.nouveau && <small className={passwordStrength.valid ? 'success-message' : 'error-message'}>{passwordStrength.message}</small>}
               </div>
-              <div className="form-group"><label>CONFIRMER</label><input type="password" name="confirm" value={passwordData.confirm} onChange={handlePasswordChange} required />
-                {passwordData.nouveau && passwordData.confirm && passwordData.nouveau !== passwordData.confirm && <small className="error-message">Les mots de passe ne correspondent pas</small>}
+              <div className="form-group"><label>{t('profil.confirmer_mdp', 'CONFIRMER')}</label><input type="password" name="confirm" value={passwordData.confirm} onChange={handlePasswordChange} required />
+                {passwordData.nouveau && passwordData.confirm && passwordData.nouveau !== passwordData.confirm && <small className="error-message">{t('profil.mdp_non_correspondant', 'Les mots de passe ne correspondent pas')}</small>}
               </div>
-              <button type="submit" className="btn-primary" disabled={!isPasswordValid() || loading}><FaCheck style={{ marginRight: '0.5rem' }} /> Changer le mot de passe</button>
+              <button type="submit" className="btn-primary" disabled={!isPasswordValid() || loading}><FaCheck style={{ marginRight: '0.5rem' }} /> {t('profil.changer_mdp', 'Changer le mot de passe')}</button>
             </form>
           </div>
         </div>
@@ -177,8 +182,8 @@ const Profil = () => {
       {showZoom && avatarPreview && (
         <div className="zoom-overlay" onClick={closeZoom}>
           <div className="zoom-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="zoom-circle"><img src={avatarPreview} alt="zoom" /></div>
-            <button className="delete-btn" onClick={deletePhoto} title="Supprimer la photo"><FaTrash /></button>
+            <div className="zoom-circle"><img src={avatarPreview} alt={t('profil.zoom', 'zoom')} /></div>
+            <button className="delete-btn" onClick={deletePhoto} title={t('profil.supprimer_photo', 'Supprimer la photo')}><FaTrash /></button>
             <button className="close-btn" onClick={closeZoom}>×</button>
           </div>
         </div>

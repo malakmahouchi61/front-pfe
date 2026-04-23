@@ -304,3 +304,38 @@ header,
 .navbar-right {
   overflow: visible !important;
 }
+@import 'flag-icons/css/flag-icons.min.css';
+
+.language-switcher {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.lang-btn:hover {
+  background: #f0f0f0;
+}
+
+.lang-btn.active {
+  background: #007bff;
+  color: white;
+}
+
+.fi {
+  width: 20px;
+  height: 15px;
+  border-radius: 2px;
+}

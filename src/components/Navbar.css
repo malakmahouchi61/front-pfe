@@ -1,9 +1,14 @@
-/* ===== NAVBAR PRINCIPALE ===== */
+/* ============================================
+   NAVBAR PRINCIPALE
+   ============================================ */
 .navbar {
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   padding: 0.5rem 2rem;
   border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .nav-container {
@@ -15,6 +20,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
+  overflow: visible !important; /* essentiel pour le dropdown */
 }
 
 /* Logo */
@@ -71,15 +77,16 @@
   border-radius: 3px 3px 0 0;
 }
 
-/* Zone droite (thème, langue, notifications, utilisateur) */
+/* Partie droite : thème, langue, notifications, utilisateur */
 .nav-right {
   display: flex;
   align-items: center;
   gap: 1.2rem;
   flex-wrap: wrap;
+  overflow: visible !important;
 }
 
-/* Bouton thème */
+/* Bouton thème (lune/soleil) */
 .theme-toggle {
   background: none;
   border: none;
@@ -93,44 +100,54 @@
 }
 
 .theme-toggle:hover {
-  color: blanchedalmond;
+  color: #f57c10;
 }
 
-/* ===== SÉLECTEUR DE LANGUE (LanguageSwitcher) ===== */
-.lang-switcher {
+/* ============================================
+   SÉLECTEUR DE LANGUE (icône globe + drapeau)
+   ============================================ */
+.lang-dropdown {
   position: relative;
   display: inline-block;
+  overflow: visible;
 }
 
-.lang-toggle {
+.lang-dropdown-trigger {
   background: transparent;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.8rem;
-  border-radius: 40px;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  font-size: 16px;
   color: #444;
-  font-size: 1rem;
-  transition: all 0.2s ease;
 }
 
-.lang-toggle:hover {
-  background: #f1f5f9;
-  transform: scale(1.02);
+.lang-dropdown-trigger:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.lang-menu {
+.current-flag {
+  width: 22px;
+  height: 16px;
+  border-radius: 2px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Menu déroulant superposé (z-index très haut) */
+.lang-dropdown-menu {
   position: absolute;
-  top: 45px;
+  top: 100%;
   right: 0;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  margin-top: 8px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 150px;
+  z-index: 9999;
   overflow: hidden;
   animation: fadeInDown 0.2s ease;
 }
@@ -146,49 +163,48 @@
   }
 }
 
-.lang-item {
+.lang-option {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 10px;
   width: 100%;
-  padding: 0.7rem 1rem;
+  padding: 10px 16px;
   background: transparent;
   border: none;
   cursor: pointer;
   text-align: left;
-  color: #1e293b;
-  font-size: 0.9rem;
+  font-size: 14px;
   transition: background 0.2s;
+  color: #1e293b;
 }
 
-.lang-item:hover {
-  background: #f8fafc;
+.lang-option:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
-.lang-item.active {
-  background: #f57c10;
-  color: white;
+.lang-option.active {
+  background: #f57c1020;
+  color: #f57c10;
+  font-weight: 500;
 }
 
-.flag {
-  font-size: 1.2rem;
+.fi {
+  width: 22px;
+  height: 16px;
+  border-radius: 2px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
 }
 
-/* Support RTL pour le menu de langue */
-[dir="rtl"] .lang-menu {
-  right: auto;
-  left: 0;
+/* ============================================
+   NOTIFICATIONS (cloche)
+   ============================================ */
+.notification-bell {
+  position: relative;
 }
 
-[dir="rtl"] .lang-item {
-  text-align: right;
-}
-
-[dir="rtl"] .lang-toggle {
-  flex-direction: row-reverse;
-}
-
-/* ===== UTILISATEUR CONNECTÉ ===== */
+/* ============================================
+   UTILISATEUR CONNECTÉ
+   ============================================ */
 .user-menu {
   display: flex;
   align-items: center;
@@ -248,7 +264,9 @@
   color: #f57c10;
 }
 
-/* Boutons orange */
+/* ============================================
+   BOUTONS AUTHENTIFICATION (Connexion / Inscription)
+   ============================================ */
 .btn-orange {
   background-color: #f57c10;
   color: white;
@@ -289,7 +307,79 @@
   gap: 0.8rem;
 }
 
-/* Responsive */
+/* ============================================
+   MODE SOMBRE
+   ============================================ */
+.dark-mode .navbar {
+  background-color: #1e1e2f;
+  border-bottom-color: #2d2d3a;
+}
+
+.dark-mode .nav-link {
+  color: #e0e0e0;
+}
+
+.dark-mode .nav-link:hover,
+.dark-mode .nav-link.active {
+  color: #f57c10;
+}
+
+.dark-mode .theme-toggle {
+  color: #e0e0e0;
+}
+
+.dark-mode .theme-toggle:hover {
+  color: #f57c10;
+}
+
+.dark-mode .lang-dropdown-trigger {
+  color: #e0e0e0;
+}
+
+.dark-mode .lang-dropdown-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .lang-dropdown-menu {
+  background: #2d2d2d;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .lang-option {
+  color: #e0e0e0;
+}
+
+.dark-mode .lang-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .lang-option.active {
+  background: #f57c1020;
+  color: #f57c10;
+}
+
+.dark-mode .nav-greeting {
+  color: #e0e0e0;
+}
+
+.dark-mode .avatar-small {
+  background: #2d2d3a;
+  border-color: #3d3d4a;
+}
+
+.dark-mode .btn-outline {
+  color: #f57c10;
+  border-color: #f57c10;
+}
+
+.dark-mode .btn-outline:hover {
+  background: #f57c10;
+  color: white;
+}
+
+/* ============================================
+   RESPONSIVE (mobile)
+   ============================================ */
 @media (max-width: 768px) {
   .nav-container {
     flex-direction: column;
@@ -308,29 +398,9 @@
     justify-content: center;
     gap: 1rem;
   }
-}
-.navbar,
-.nav-container,
-.nav-right {
-  overflow: visible !important;
-  position: relative;
-}
-.navbar,
-.nav-container,
-.nav-right {
-  overflow: visible !important;
-  position: relative;
-  z-index: auto;
-}
-.navbar,
-.nav-container,
-.nav-right {
-  overflow: visible !important;
-  position: relative;
-}
-.navbar,
-.nav-container,
-.nav-right {
-  overflow: visible !important;
-  position: relative;
+
+  .lang-dropdown-menu {
+    right: auto;
+    left: 0;
+  }
 }

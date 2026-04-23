@@ -1,10 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft, FaImage, FaBullhorn } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './CreerCampagne.css';
 
 const CreerCampagne = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -49,40 +51,43 @@ const CreerCampagne = () => {
     e.preventDefault();
 
     if (!user) {
-      alert('Utilisateur non connecté');
+      alert(t('creer_campagne.erreur_non_connecte', 'Utilisateur non connecté'));
       return;
     }
 
     // Validations
     if (formData.type_campagne === 'financier' && !formData.objectif) {
-      alert('Veuillez saisir un objectif financier.');
+      alert(t('creer_campagne.erreur_objectif_financier', 'Veuillez saisir un objectif financier.'));
       return;
     }
     if (formData.type_campagne === 'kafala' && avecObjectif && !formData.objectif) {
-      alert('Veuillez saisir un objectif financier pour cette campagne.');
+      alert(t('creer_campagne.erreur_objectif_kafala', 'Veuillez saisir un objectif financier pour cette campagne.'));
       return;
     }
     if (formData.type_campagne !== 'financier' && !avecObjectif && !formData.besoinMateriel) {
-      alert('Veuillez décrire le besoin.');
+      alert(t('creer_campagne.erreur_besoin', 'Veuillez décrire le besoin.'));
       return;
     }
     if (!formData.date_fin) {
-      alert('Veuillez saisir une date de fin.');
+      alert(t('creer_campagne.erreur_date_fin', 'Veuillez saisir une date de fin.'));
       return;
     }
     if (!formData.titre || !formData.description) {
-      alert('Veuillez remplir le titre et la description.');
+      alert(t('creer_campagne.erreur_titre_description', 'Veuillez remplir le titre et la description.'));
       return;
     }
 
+    // Arrondir l'objectif à l'entier le plus proche
+    let objectifValue = formData.objectif ? Math.round(parseFloat(formData.objectif)) : 0;
+
     let fullDescription = formData.description;
     if (formData.type_campagne === 'financier') {
-      fullDescription += `\nObjectif: ${formData.objectif} €`;
+      fullDescription += `\n${t('creer_campagne.objectif_label', 'Objectif')}: ${objectifValue} TND`;
     } else if (formData.type_campagne === 'kafala') {
-      if (avecObjectif) fullDescription += `\nObjectif: ${formData.objectif} €`;
-      fullDescription += `\nBesoin: ${formData.besoinMateriel}`;
+      if (avecObjectif) fullDescription += `\n${t('creer_campagne.objectif_label', 'Objectif')}: ${objectifValue} TND`;
+      fullDescription += `\n${t('creer_campagne.besoin_label', 'Besoin')}: ${formData.besoinMateriel}`;
     } else {
-      fullDescription += `\nBesoin: ${formData.besoinMateriel}`;
+      fullDescription += `\n${t('creer_campagne.besoin_label', 'Besoin')}: ${formData.besoinMateriel}`;
     }
 
     const formDataToSend = new FormData();
@@ -90,7 +95,7 @@ const CreerCampagne = () => {
     formDataToSend.append('type_campagne', formData.type_campagne);
     formDataToSend.append('titre', formData.titre);
     formDataToSend.append('description', fullDescription);
-    formDataToSend.append('objectif', formData.objectif || 0);
+    formDataToSend.append('objectif', objectifValue);
     formDataToSend.append('date_fin', formData.date_fin);
     formDataToSend.append('urgence', formData.urgence);
     formDataToSend.append('ville', formData.ville || '');
@@ -99,20 +104,20 @@ const CreerCampagne = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/campagnes', {
+      const response = await fetch('/campagnes', {
         method: 'POST',
         body: formDataToSend,
       });
       const result = await response.json();
       if (response.ok) {
-        alert('✅ Campagne créée avec succès ! Elle sera visible après validation.');
+        alert(t('creer_campagne.succes', '✅ Campagne créée avec succès ! Elle sera visible après validation.'));
         navigate('/campagnes');
       } else {
-        alert('Erreur : ' + result.error);
+        alert(t('creer_campagne.erreur_serveur', 'Erreur : ') + (result.error || ''));
       }
     } catch (err) {
       console.error(err);
-      alert('Problème de connexion au serveur.');
+      alert(t('creer_campagne.erreur_connexion', 'Problème de connexion au serveur.'));
     }
   };
 
@@ -120,114 +125,118 @@ const CreerCampagne = () => {
     <div className="campagne-page">
       <div className="container-campagne">
         <Link to="/" className="back-link">
-          <FaArrowLeft /> Retour
+          <FaArrowLeft /> {t('creer_campagne.retour', 'Retour')}
         </Link>
 
         <div className="form-card">
-          <h1>Lancer une campagne</h1>
+          <h1>{t('creer_campagne.titre', 'Lancer une campagne')}</h1>
           <p className="subtitle">
-            Remplissez ce formulaire pour créer votre campagne. Elle sera examinée par notre équipe avant publication.
+            {t('creer_campagne.sous_titre', 'Remplissez ce formulaire pour créer votre campagne. Elle sera examinée par notre équipe avant publication.')}
           </p>
 
           <form onSubmit={handleSubmit} encType="multipart/form-data">
-            {/* Type */}
+            {/* Type de campagne */}
             <div className="form-group">
-              <label>Type de campagne *</label>
+              <label>{t('creer_campagne.type_campagne', 'Type de campagne')} *</label>
               <select name="type_campagne" value={formData.type_campagne} onChange={handleChange} required>
-                <option value="kafala">Kafala (parrainage)</option>
-                <option value="financier">Collecte financière</option>
-                <option value="materiel">Collecte de matériel</option>
-                <option value="competences">Bénévolat / Compétences</option>
-                <option value="collectif">Projet collectif</option>
+                <option value="kafala">{t('creer_campagne.type_kafala', 'Kafala (parrainage)')}</option>
+                <option value="financier">{t('creer_campagne.type_financier', 'Collecte financière')}</option>
+                <option value="materiel">{t('creer_campagne.type_materiel', 'Collecte de matériel')}</option>
+                <option value="competences">{t('creer_campagne.type_competences', 'Bénévolat / Compétences')}</option>
               </select>
             </div>
 
             {/* Titre */}
             <div className="form-group">
-              <label>Titre de la campagne *</label>
+              <label>{t('creer_campagne.titre_campagne', 'Titre de la campagne')} *</label>
               <input type="text" name="titre" value={formData.titre} onChange={handleChange} required />
             </div>
 
             {/* Description */}
             <div className="form-group">
-              <label>Description détaillée *</label>
+              <label>{t('creer_campagne.description', 'Description détaillée')} *</label>
               <textarea name="description" rows="5" value={formData.description} onChange={handleChange} required />
             </div>
 
             {/* Ville & Urgence */}
             <div className="form-row">
               <div className="form-group">
-                <label>Ville *</label>
+                <label>{t('creer_campagne.ville', 'Ville')} *</label>
                 <input type="text" name="ville" value={formData.ville} onChange={handleChange} required />
               </div>
               <div className="form-group">
-                <label>Niveau d'urgence</label>
+                <label>{t('creer_campagne.urgence', "Niveau d'urgence")}</label>
                 <select name="urgence" value={formData.urgence} onChange={handleChange}>
-                  <option value="normale">Normale</option>
-                  <option value="urgente">Urgente</option>
-                  <option value="critique">Critique</option>
+                  <option value="normale">{t('creer_campagne.urgence_normale', 'Moyenne')}</option>
+                  <option value="urgente">{t('creer_campagne.urgence_urgente', 'Urgente')}</option>
+                  <option value="critique">{t('creer_campagne.urgence_critique', 'Critique')}</option>
                 </select>
               </div>
             </div>
 
             {/* Date de fin */}
             <div className="form-group">
-              <label>Date de fin *</label>
+              <label>{t('creer_campagne.date_fin', 'Date de fin')} *</label>
               <input type="date" name="date_fin" value={formData.date_fin} onChange={handleChange} required />
             </div>
 
-            {/* Objectif selon type */}
+            {/* Objectif financier (si type = financier) */}
             {formData.type_campagne === 'financier' && (
               <div className="form-group">
-                <label>Objectif financier (€) *</label>
-                <input type="number" name="objectif" value={formData.objectif} onChange={handleChange} required />
+                <label>{t('creer_campagne.objectif_financier', 'Objectif financier (TND)')} *</label>
+                <input type="number" name="objectif" value={formData.objectif} onChange={handleChange} step="1" required />
               </div>
             )}
 
+            {/* Cas Kafala : objectif optionnel + besoin */}
             {formData.type_campagne === 'kafala' && (
               <>
                 <div className="checkbox-group">
                   <label>
                     <input type="checkbox" checked={avecObjectif} onChange={(e) => setAvecObjectif(e.target.checked)} />
-                    Cette campagne a un objectif financier
+                    {t('creer_campagne.objectif_optionnel', 'Cette campagne a un objectif financier')}
                   </label>
                 </div>
                 {avecObjectif && (
                   <div className="form-group">
-                    <label>Objectif financier (€)</label>
-                    <input type="number" name="objectif" value={formData.objectif} onChange={handleChange} />
+                    <label>{t('creer_campagne.objectif_financier', 'Objectif financier (TND)')}</label>
+                    <input type="number" name="objectif" value={formData.objectif} onChange={handleChange} step="1" />
                   </div>
                 )}
                 <div className="form-group">
-                  <label>Description du besoin {!avecObjectif && '*'}</label>
+                  <label>
+                    {t('creer_campagne.description_besoin', 'Description du besoin')}
+                    {!avecObjectif && '*'}
+                  </label>
                   <textarea name="besoinMateriel" rows="3" value={formData.besoinMateriel} onChange={handleChange} required={!avecObjectif} />
                 </div>
               </>
             )}
 
+            {/* Autres types (matériel, compétences) : besoin obligatoire */}
             {!['financier', 'kafala'].includes(formData.type_campagne) && (
               <div className="form-group">
-                <label>Description du besoin *</label>
+                <label>{t('creer_campagne.description_besoin', 'Description du besoin')} *</label>
                 <textarea name="besoinMateriel" rows="3" value={formData.besoinMateriel} onChange={handleChange} required />
               </div>
             )}
 
             {/* Image */}
             <div className="form-group">
-              <label>Image de la campagne (optionnel)</label>
+              <label>{t('creer_campagne.image_optionnelle', 'Image de la campagne (optionnel)')}</label>
               <div className="file-upload">
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*, .pdf" />
                 <button type="button" onClick={handleParcourirClick} className="btn-outline">
-                  <FaImage /> Choisir un fichier
+                  <FaImage /> {t('creer_campagne.choisir_fichier', 'Choisir un fichier')}
                 </button>
-                <span className="file-name">{formData.image ? formData.image.name : 'Aucun fichier choisi'}</span>
+                <span className="file-name">{formData.image ? formData.image.name : t('creer_campagne.aucun_fichier', 'Aucun fichier choisi')}</span>
               </div>
-              {imagePreview && <div className="image-preview"><img src={imagePreview} alt="Aperçu" /></div>}
-              <small>Formats acceptés : images (tous formats) et PDF (max 5 Mo)</small>
+              {imagePreview && <div className="image-preview"><img src={imagePreview} alt={t('creer_campagne.apercu', 'Aperçu')} /></div>}
+              <small>{t('creer_campagne.formats_acceptes', 'Formats acceptés : images (tous formats) et PDF (max 5 Mo)')}</small>
             </div>
 
             <button type="submit" className="btn-submit">
-              <FaBullhorn /> Créer la campagne
+              <FaBullhorn /> {t('creer_campagne.btn_creer', 'Créer la campagne')}
             </button>
           </form>
         </div>

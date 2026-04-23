@@ -1,0 +1,143 @@
+.campagne-detail-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.campagne-detail-card {
+  background: var(--bg-elevated);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+}
+
+.campagne-image-wrapper {
+  width: 100%;
+  height: 300px;
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+
+.campagne-detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  gap: 1rem;
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+}
+
+.campagne-content {
+  padding: 2rem;
+}
+
+.campagne-content h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.campagne-description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.campagne-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.campagne-meta p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.progress-section {
+  margin: 1.5rem 0;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.collected {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.goal {
+  color: var(--text-secondary);
+}
+
+progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+  background-color: var(--border);
+}
+
+progress::-webkit-progress-value {
+  background-color: var(--primary);
+}
+
+.progress-percent {
+  text-align: right;
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.don-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .campagne-image-wrapper {
+    height: 200px;
+  }
+  .campagne-content {
+    padding: 1.2rem;
+  }
+  .campagne-content h1 {
+    font-size: 1.4rem;
+  }
+}

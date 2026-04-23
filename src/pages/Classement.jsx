@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  FaTrophy,
-  FaMedal,
-  FaStar,
-  FaHeart,
-  FaDonate,
-  FaUsers,
-  FaBuilding,
-  FaUser,
-  FaGlobe,
-  FaCalendarAlt,
-  FaGift,
-  FaChartLine,
+  FaTrophy, FaMedal, FaStar, FaHeart, FaDonate, FaUsers,
+  FaBuilding, FaUser, FaGlobe, FaCalendarAlt, FaGift, FaChartLine,
 } from 'react-icons/fa';
 import './Classement.css';
 
 const Classement = () => {
+  const { t } = useTranslation();
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,9 +29,9 @@ const Classement = () => {
   };
 
   const getBadge = (points) => {
-    if (points >= 500) return { name: 'Champion solidaire', icon: <FaTrophy />, color: '#FFD700' };
-    if (points >= 100) return { name: 'Cœur généreux', icon: <FaHeart />, color: '#f57c00' };
-    return { name: 'Étoile montante', icon: <FaStar />, color: '#10b981' };
+    if (points >= 500) return { name: t('classement.champion_solidaire', 'Champion solidaire'), icon: <FaTrophy />, color: '#FFD700' };
+    if (points >= 100) return { name: t('classement.coeur_generaux', 'Cœur généreux'), icon: <FaHeart />, color: '#f57c00' };
+    return { name: t('classement.etoile_montante', 'Étoile montante'), icon: <FaStar />, color: '#10b981' };
   };
 
   const getProgressToFirst = (points) => {
@@ -56,13 +48,13 @@ const Classement = () => {
       try {
         const token = localStorage.getItem('token');
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        const url = `http://localhost:3000/classement?type=${filterType}&period=${filterPeriod}`;
+        const url = `/classement?type=${filterType}&period=${filterPeriod}`;
         const res = await fetch(url, { headers });
         if (!res.ok) throw new Error(`Erreur ${res.status}: ${res.statusText}`);
         const data = await res.json();
         const normalizedUsers = data.map((user) => ({
           id_utilisateur: user.id_utilisateur || user.id,
-          nom: user.nom || user.name || 'Utilisateur',
+          nom: user.nom || user.name || t('common.utilisateur', 'Utilisateur'),
           prenom: user.prenom || user.firstName || '',
           points: user.points || 0,
           avatar: user.avatar || null,
@@ -78,18 +70,18 @@ const Classement = () => {
         }
       } catch (err) {
         console.error('Erreur classement:', err);
-        setError('Impossible de charger le classement. Veuillez réessayer plus tard.');
+        setError(t('classement.erreur_chargement', 'Impossible de charger le classement. Veuillez réessayer plus tard.'));
       } finally {
         setLoading(false);
       }
     };
     fetchClassement();
-  }, [filterType, filterPeriod, currentUser]);
+  }, [filterType, filterPeriod, currentUser, t]);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch('http://localhost:3000/stats/impact');
+        const res = await fetch('/stats/impact');
         if (!res.ok) { console.warn('Stats impact non disponibles'); return; }
         const data = await res.json();
         setImpactStats({
@@ -108,12 +100,12 @@ const Classement = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
       try {
-        const res = await fetch('http://localhost:3000/users/me', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch('/users/me', { headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
           setCurrentUser({
             id_utilisateur: data.id_utilisateur || data.id,
-            nom: data.nom || data.name || 'Utilisateur',
+            nom: data.nom || data.name || t('common.utilisateur', 'Utilisateur'),
             prenom: data.prenom || data.firstName || '',
           });
           setMyPoints(data.points || 0);
@@ -123,7 +115,7 @@ const Classement = () => {
             const parsed = JSON.parse(storedUser);
             setCurrentUser({
               id_utilisateur: parsed.id_utilisateur || parsed.id,
-              nom: parsed.nom || parsed.name || 'Utilisateur',
+              nom: parsed.nom || parsed.name || t('common.utilisateur', 'Utilisateur'),
               prenom: parsed.prenom || parsed.firstName || '',
             });
             setMyPoints(parsed.points || 0);
@@ -132,58 +124,61 @@ const Classement = () => {
       } catch (err) { console.error('Erreur récupération utilisateur', err); }
     };
     fetchCurrentUser();
-  }, []);
+  }, [t]);
 
   const getSuggestion = () => {
-    if (myRank === 1) return "🏆 Bravo ! Tu es le champion de l'entraide. Continue d'inspirer !";
+    if (myRank === 1) return t('classement.suggestion_1', "🏆 Bravo ! Tu es le champion de l'entraide. Continue d'inspirer !");
     if (myRank === 2 || myRank === 3) {
       const pointsToFirst = filteredUsers[0]?.points - myPoints;
-      if (pointsToFirst > 0) return `🎯 Encore ${formatPoints(pointsToFirst)} points pour devenir numéro 1 !`;
+      if (pointsToFirst > 0) return t('classement.suggestion_2', '🎯 Encore {{points}} points pour devenir numéro 1 !', { points: formatPoints(pointsToFirst) });
     }
     if (myRank > 3 && myRank <= 10) {
       const pointsToThird = filteredUsers[2]?.points - myPoints;
-      if (pointsToThird > 0) return `🔥 Encore ${formatPoints(pointsToThird)} points pour entrer dans le top 3 !`;
+      if (pointsToThird > 0) return t('classement.suggestion_3', '🔥 Encore {{points}} points pour entrer dans le top 3 !', { points: formatPoints(pointsToThird) });
     }
-    if (myRank === 0) return "🌟 Rejoins le classement en faisant un don ! Ta générosité sera récompensée.";
-    return "🌟 Continue à faire des dons pour grimper dans le classement !";
+    if (myRank === 0) return t('classement.suggestion_4', "🌟 Rejoins le classement en faisant un don ! Ta générosité sera récompensée.");
+    return t('classement.suggestion_5', "🌟 Continue à faire des dons pour grimper dans le classement !");
   };
 
   const top3 = filteredUsers.slice(0, 3);
   const rest = filteredUsers.slice(3);
 
-  if (loading) return <div className="classement-loading">Chargement du classement...</div>;
+  if (loading) return <div className="classement-loading">{t('common.chargement', 'Chargement...')}</div>;
   if (error) return <div className="classement-error">{error}</div>;
 
   return (
     <div className="classement-modern">
       <div className="classement-container">
-        <div className="classement-header"><h1>Classement Sanad</h1><p className="subtitle">Les cœurs généreux de notre communauté</p></div>
+        <div className="classement-header">
+          <h1>{t('classement.titre', 'Classement Sanad')}</h1>
+          <p className="subtitle">{t('classement.sous_titre', 'Les cœurs généreux de notre communauté')}</p>
+        </div>
         <div className="impact-stats">
-          <div className="stat-card"><FaUsers className="stat-icon" /><div className="stat-info"><span className="stat-value">{impactStats.beneficiariesHelped}</span><span className="stat-label">Bénéficiaires aidés</span></div></div>
-          <div className="stat-card"><FaDonate className="stat-icon" /><div className="stat-info"><span className="stat-value">{formatPoints(impactStats.totalDonations)} DT</span><span className="stat-label">Dons totaux</span></div></div>
-          <div className="stat-card"><FaGift className="stat-icon" /><div className="stat-info"><span className="stat-value">{impactStats.materialDonations}</span><span className="stat-label">Dons matériels</span></div></div>
-          <div className="stat-card"><FaChartLine className="stat-icon" /><div className="stat-info"><span className="stat-value">{impactStats.completedMissions}</span><span className="stat-label">Missions accomplies</span></div></div>
+          <div className="stat-card"><FaUsers className="stat-icon" /><div className="stat-info"><span className="stat-value">{impactStats.beneficiariesHelped}</span><span className="stat-label">{t('classement.beneficiaires_aides', 'Bénéficiaires aidés')}</span></div></div>
+          <div className="stat-card"><FaDonate className="stat-icon" /><div className="stat-info"><span className="stat-value">{formatPoints(impactStats.totalDonations)} DT</span><span className="stat-label">{t('classement.dons_totaux', 'Dons totaux')}</span></div></div>
+          <div className="stat-card"><FaGift className="stat-icon" /><div className="stat-info"><span className="stat-value">{impactStats.materialDonations}</span><span className="stat-label">{t('classement.dons_materiels', 'Dons matériels')}</span></div></div>
+          <div className="stat-card"><FaChartLine className="stat-icon" /><div className="stat-info"><span className="stat-value">{impactStats.completedMissions}</span><span className="stat-label">{t('classement.missions_accomplies', 'Missions accomplies')}</span></div></div>
         </div>
         <div className="badges-grid">
-          <div className="badge-card etoile"><FaStar className="badge-icon" /><strong>Étoile montante</strong><span>0 – 100 pts</span></div>
-          <div className="badge-card coeur"><FaHeart className="badge-icon" /><strong>Cœur généreux</strong><span>100 – 500 pts</span></div>
-          <div className="badge-card champion"><FaTrophy className="badge-icon" /><strong>Champion solidaire</strong><span>500+ pts</span></div>
+          <div className="badge-card etoile"><FaStar className="badge-icon" /><strong>{t('classement.etoile_montante', 'Étoile montante')}</strong><span>0 – 100 pts</span></div>
+          <div className="badge-card coeur"><FaHeart className="badge-icon" /><strong>{t('classement.coeur_generaux', 'Cœur généreux')}</strong><span>100 – 500 pts</span></div>
+          <div className="badge-card champion"><FaTrophy className="badge-icon" /><strong>{t('classement.champion_solidaire', 'Champion solidaire')}</strong><span>500+ pts</span></div>
         </div>
         <div className="filters-top">
-          <div className="filter-block"><div className="filter-header"><FaUsers className="filter-icon" /><span>Type d'utilisateur</span></div>
+          <div className="filter-block"><div className="filter-header"><FaUsers className="filter-icon" /><span>{t('classement.type_utilisateur', 'Type d\'utilisateur')}</span></div>
             <div className="filter-options">
-              <button className={filterType === 'global' ? 'active' : ''} onClick={() => setFilterType('global')}><FaGlobe /> Global</button>
-              <button className={filterType === 'donateurs' ? 'active' : ''} onClick={() => setFilterType('donateurs')}><FaUsers /> Donateurs</button>
-              <button className={filterType === 'associations' ? 'active' : ''} onClick={() => setFilterType('associations')}><FaBuilding /> Associations</button>
-              <button className={filterType === 'beneficiaires' ? 'active' : ''} onClick={() => setFilterType('beneficiaires')}><FaUser /> Bénéficiaires</button>
+              <button className={filterType === 'global' ? 'active' : ''} onClick={() => setFilterType('global')}><FaGlobe /> {t('classement.global', 'Global')}</button>
+              <button className={filterType === 'donateurs' ? 'active' : ''} onClick={() => setFilterType('donateurs')}><FaUsers /> {t('classement.donateurs', 'Donateurs')}</button>
+              <button className={filterType === 'associations' ? 'active' : ''} onClick={() => setFilterType('associations')}><FaBuilding /> {t('classement.associations', 'Associations')}</button>
+              <button className={filterType === 'beneficiaires' ? 'active' : ''} onClick={() => setFilterType('beneficiaires')}><FaUser /> {t('classement.beneficiaires', 'Bénéficiaires')}</button>
             </div>
           </div>
-          <div className="filter-block"><div className="filter-header"><FaCalendarAlt className="filter-icon" /><span>Période</span></div>
+          <div className="filter-block"><div className="filter-header"><FaCalendarAlt className="filter-icon" /><span>{t('classement.periode', 'Période')}</span></div>
             <div className="filter-options">
-              <button className={filterPeriod === 'today' ? 'active' : ''} onClick={() => setFilterPeriod('today')}>Aujourd'hui</button>
-              <button className={filterPeriod === 'week' ? 'active' : ''} onClick={() => setFilterPeriod('week')}>Cette semaine</button>
-              <button className={filterPeriod === 'month' ? 'active' : ''} onClick={() => setFilterPeriod('month')}>Ce mois</button>
-              <button className={filterPeriod === 'all' ? 'active' : ''} onClick={() => setFilterPeriod('all')}>Tout le temps</button>
+              <button className={filterPeriod === 'today' ? 'active' : ''} onClick={() => setFilterPeriod('today')}>{t('classement.aujourdhui', 'Aujourd\'hui')}</button>
+              <button className={filterPeriod === 'week' ? 'active' : ''} onClick={() => setFilterPeriod('week')}>{t('classement.cette_semaine', 'Cette semaine')}</button>
+              <button className={filterPeriod === 'month' ? 'active' : ''} onClick={() => setFilterPeriod('month')}>{t('classement.ce_mois', 'Ce mois')}</button>
+              <button className={filterPeriod === 'all' ? 'active' : ''} onClick={() => setFilterPeriod('all')}>{t('classement.tout_temps', 'Tout le temps')}</button>
             </div>
           </div>
         </div>
@@ -203,7 +198,7 @@ const Classement = () => {
                 <div className="rank-number">#{rank}</div>
                 <div className="ranking-avatar">{user.avatar ? <img src={`http://localhost:3000${user.avatar}`} alt={user.nom} /> : <FaUser />}</div>
                 <div className="ranking-info"><div className="ranking-name">{user.nom} {user.prenom}</div><div className="ranking-badge" style={{ backgroundColor: `${badge.color}20`, color: badge.color }}>{badge.icon} {badge.name}</div></div>
-                <div className="ranking-stats"><div className="points"><FaStar /> {formatPoints(user.points)} pts</div><div className="progress-container"><div className="progress-bar" style={{ width: `${progress}%` }} /></div></div>
+                <div className="ranking-stats"><div className="points"><FaStar /> {formatPoints(user.points)} {t('classement.pts', 'pts')}</div><div className="progress-container"><div className="progress-bar" style={{ width: `${progress}%` }} /></div></div>
               </div>
             );
           })}
@@ -212,8 +207,8 @@ const Classement = () => {
           <div className="personal-rank">
             <div className="personal-rank-content">
               <div className="rank-icon">{myRank <= 3 ? <FaTrophy /> : <FaDonate />}</div>
-              <div className="rank-info"><div className="rank-label">Ton classement</div><div className="rank-number-large">{myRank > 0 ? `#${myRank}` : 'Non classé'}</div></div>
-              <div className="rank-details"><div className="rank-points"><FaStar /> {formatPoints(myPoints)} pts</div><div className="rank-badge" style={{ backgroundColor: `${getBadge(myPoints).color}20`, color: getBadge(myPoints).color }}>{getBadge(myPoints).icon} {getBadge(myPoints).name}</div></div>
+              <div className="rank-info"><div className="rank-label">{t('classement.ton_classement', 'Ton classement')}</div><div className="rank-number-large">{myRank > 0 ? `#${myRank}` : t('classement.non_classe', 'Non classé')}</div></div>
+              <div className="rank-details"><div className="rank-points"><FaStar /> {formatPoints(myPoints)} {t('classement.pts', 'pts')}</div><div className="rank-badge" style={{ backgroundColor: `${getBadge(myPoints).color}20`, color: getBadge(myPoints).color }}>{getBadge(myPoints).icon} {getBadge(myPoints).name}</div></div>
             </div>
             <div className="rank-suggestion">{getSuggestion()}</div>
           </div>

@@ -29,7 +29,7 @@ function DemandeDetail() {
   useEffect(() => {
     const fetchDemande = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/demandes/${id}`);
+const res = await fetch(`/demandes/${id}`);
         if (!res.ok) throw new Error('Demande non trouvée');
         const data = await res.json();
         setDemande(data);

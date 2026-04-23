@@ -11,7 +11,7 @@ const NotificationListener = () => {
     if (!socket) return;
 
     const onDonationValidated = (data) => {
-      toast.success(data.message);
+      toast.success(data.message || "Don validé !");
       refresh();
     };
 
@@ -31,7 +31,7 @@ const NotificationListener = () => {
     };
 
     const onNewCampaign = (data) => {
-      toast.info(`Nouvelle campagne : ${data.campagne.titre}`);
+      toast.info(`Nouvelle campagne : ${data.campagne?.titre || "Nouvelle campagne"}`);
       refresh();
     };
 

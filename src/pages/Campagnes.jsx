@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaMapMarkerAlt, FaUserFriends, FaClock, FaImage } from 'react-icons/fa';
 import './Campagnes.css';
 
 const Campagnes = () => {
+  const { t } = useTranslation();
   const [campagnes, setCampagnes] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ const Campagnes = () => {
   useEffect(() => {
     const fetchCampagnes = async () => {
       try {
-        const res = await fetch('http://localhost:3000/campagnes?statut=valider');
+        const res = await fetch('/campagnes?statut=valider');
         if (res.ok) {
           const data = await res.json();
           setCampagnes(Array.isArray(data) ? data : []);
@@ -39,15 +41,15 @@ const Campagnes = () => {
     navigate(`/campagnes/${id}`);
   };
 
-  if (loading) return <div className="loading">Chargement des campagnes...</div>;
+  if (loading) return <div className="loading">{t('common.chargement', 'Chargement...')}</div>;
 
   return (
     <div className="campagnes-container">
-      <h1>Découvrez nos campagnes</h1>
-      <p className="subtitle">Soutenez une cause qui vous touche</p>
+      <h1>{t('campagnes.titre', 'Découvrez nos campagnes')}</h1>
+      <p className="subtitle">{t('campagnes.sous_titre', 'Soutenez une cause qui vous touche')}</p>
       <div className="campagnes-grid">
         {campagnes.length === 0 ? (
-          <div className="no-campagnes">Aucune campagne pour le moment</div>
+          <div className="no-campagnes">{t('campagnes.aucune', 'Aucune campagne pour le moment')}</div>
         ) : (
           campagnes.map((campagne) => (
             <div key={campagne.id_campagne} className="campagne-card" onClick={() => handleClick(campagne.id_campagne)}>
@@ -57,18 +59,25 @@ const Campagnes = () => {
                 ) : (
                   <div className="campagne-image-placeholder">
                     <FaImage className="placeholder-icon" />
-                    <span className="placeholder-text">Pas d'image</span>
+                    <span className="placeholder-text">{t('campagnes.pas_image', 'Pas d\'image')}</span>
                   </div>
                 )}
               </div>
               <div className="campagne-content">
                 <div className="campagne-header">
-                  <h3>{campagne.titre || 'Sans titre'}</h3>
-                  {campagne.urgence === 'urgente' && <span className="urgence-badge">URGENTE</span>}
+                  <h3>{campagne.titre || t('campagnes.sans_titre', 'Sans titre')}</h3>
+                  {campagne.urgence === 'urgente' && <span className="urgence-badge">{t('campagnes.urgence', 'URGENTE')}</span>}
                 </div>
-                <div className="campagne-location"><FaMapMarkerAlt className="location-icon" /><span>{campagne.ville || 'Localisation non spécifiée'}</span></div>
-                <p className="campagne-description">{campagne.description ? campagne.description.substring(0, 120) : ''}...</p>
-                <div className="meta-row"><span className="type-badge">{campagne.type_campagne}</span></div>
+                <div className="campagne-location">
+                  <FaMapMarkerAlt className="location-icon" />
+                  <span>{campagne.ville || t('campagnes.localisation_non_specifiee', 'Localisation non spécifiée')}</span>
+                </div>
+                <p className="campagne-description">
+                  {campagne.description ? campagne.description.substring(0, 120) : ''}...
+                </p>
+                <div className="meta-row">
+                  <span className="type-badge">{campagne.type_campagne}</span>
+                </div>
                 {campagne.type_campagne === 'financier' && (
                   <div className="progress-section">
                     <div className="progress-numbers">
@@ -79,10 +88,12 @@ const Campagnes = () => {
                   </div>
                 )}
                 <div className="stats-row">
-                  <span><FaUserFriends className="stats-icon" /> {campagne.nombre_donateurs || 0} donateurs</span>
-                  <span><FaClock className="stats-icon" /> {Math.max(0, Math.ceil((new Date(campagne.date_fin) - new Date()) / (1000 * 60 * 60 * 24)))} jours restants</span>
+                  <span><FaUserFriends className="stats-icon" /> {campagne.nombre_donateurs || 0} {t('campagnes.donateurs', 'donateurs')}</span>
+                  <span><FaClock className="stats-icon" /> {Math.max(0, Math.ceil((new Date(campagne.date_fin) - new Date()) / (1000 * 60 * 60 * 24)))} {t('campagnes.jours_restants', 'jours restants')}</span>
                 </div>
-                <button className="btn-voir-campagne" onClick={(e) => { e.stopPropagation(); handleClick(campagne.id_campagne); }}>Voir la campagne</button>
+                <button className="btn-voir-campagne" onClick={(e) => { e.stopPropagation(); handleClick(campagne.id_campagne); }}>
+                  {t('campagnes.btn_voir', 'Voir la campagne')}
+                </button>
               </div>
             </div>
           ))

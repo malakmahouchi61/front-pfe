@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FaMapMarkerAlt, FaClock, FaUsers, FaChartLine, FaFilter } from "react-icons/fa";
 import "./Priorisation.css";
 
 const Priorisation = () => {
+  const { t } = useTranslation();
   const [demandes, setDemandes] = useState([]);
   const [campagnes, setCampagnes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,25 +17,24 @@ const Priorisation = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Appeler les nouvelles routes Node.js (port 3000)
         const [resDemandes, resCampagnes] = await Promise.all([
-          fetch("http://localhost:3000/api/priorite/demandes"),
-          fetch("http://localhost:3000/api/priorite/campagnes")
+          fetch("/api/priorite/demandes"),
+          fetch("/api/priorite/campagnes")
         ]);
-        if (!resDemandes.ok || !resCampagnes.ok) throw new Error("Erreur chargement");
+        if (!resDemandes.ok || !resCampagnes.ok) throw new Error(t('priorisation.erreur_chargement', "Erreur chargement"));
         const demandesData = await resDemandes.json();
         const campagnesData = await resCampagnes.json();
         setDemandes(demandesData);
         setCampagnes(campagnesData);
       } catch (err) {
         console.error(err);
-        setError("Impossible de charger les priorités.");
+        setError(t('priorisation.erreur_priorites', "Impossible de charger les priorités."));
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [t]);
 
   const filtrerParType = (items, typeField) => {
     if (typeFiltre === "tous") return items;
@@ -47,31 +48,31 @@ const Priorisation = () => {
     return "#ef4444";
   };
 
-  if (loading) return <div className="priorisation-loading">📊 Calcul des priorités...</div>;
+  if (loading) return <div className="priorisation-loading">{t('priorisation.calcul_priorites', "📊 Calcul des priorités...")}</div>;
   if (error) return <div className="priorisation-error">{error}</div>;
 
   return (
     <div className="priorisation-container">
       <div className="priorisation-header">
-        <h1>📋 Priorisation des besoins</h1>
-        <p className="subtitle">Classement objectif (date de fin, besoin restant, nombre de donateurs)</p>
+        <h1>{t('priorisation.titre', "📋 Priorisation des besoins")}</h1>
+        <p className="subtitle">{t('priorisation.sous_titre', "Classement objectif (date de fin, besoin restant, nombre de donateurs)")}</p>
       </div>
       <div className="filters-bar">
         <FaFilter className="filter-icon" />
-        <button className={typeFiltre === "tous" ? "filter-active" : ""} onClick={() => setTypeFiltre("tous")}>Tous</button>
-        <button className={typeFiltre === "financier" ? "filter-active" : ""} onClick={() => setTypeFiltre("financier")}>Financier</button>
-        <button className={typeFiltre === "materiel" ? "filter-active" : ""} onClick={() => setTypeFiltre("materiel")}>Matériel</button>
-        <button className={typeFiltre === "competences" ? "filter-active" : ""} onClick={() => setTypeFiltre("competences")}>Compétences</button>
-        <button className={typeFiltre === "kafala" ? "filter-active" : ""} onClick={() => setTypeFiltre("kafala")}>Kafala</button>
+        <button className={typeFiltre === "tous" ? "filter-active" : ""} onClick={() => setTypeFiltre("tous")}>{t('priorisation.filtre_tous', "Tous")}</button>
+        <button className={typeFiltre === "financier" ? "filter-active" : ""} onClick={() => setTypeFiltre("financier")}>{t('priorisation.filtre_financier', "Financier")}</button>
+        <button className={typeFiltre === "materiel" ? "filter-active" : ""} onClick={() => setTypeFiltre("materiel")}>{t('priorisation.filtre_materiel', "Matériel")}</button>
+        <button className={typeFiltre === "competences" ? "filter-active" : ""} onClick={() => setTypeFiltre("competences")}>{t('priorisation.filtre_competences', "Compétences")}</button>
+        <button className={typeFiltre === "kafala" ? "filter-active" : ""} onClick={() => setTypeFiltre("kafala")}>{t('priorisation.filtre_kafala', "Kafala")}</button>
       </div>
       <section className="priorisation-section">
         <div className="section-title">
           <FaChartLine className="title-icon" />
-          <h2>Missions prioritaires (bénéficiaires)</h2>
+          <h2>{t('priorisation.missions_prioritaires', "Missions prioritaires (bénéficiaires)")}</h2>
           <span className="badge">{demandesFiltrees.length}</span>
         </div>
         {demandesFiltrees.length === 0 ? (
-          <div className="empty-state">Aucune mission pour le moment.</div>
+          <div className="empty-state">{t('priorisation.aucune_mission', "Aucune mission pour le moment.")}</div>
         ) : (
           <div className="cards-grid">
             {demandesFiltrees.slice(0, 3).map((item) => (
@@ -82,13 +83,13 @@ const Priorisation = () => {
                 </div>
                 <div className="card-details">
                   <p><FaMapMarkerAlt /> {item.ville}</p>
-                  <p><FaClock /> Urgence : {item.urgence}</p>
-                  <p><FaUsers /> Type : {item.type}</p>
+                  <p><FaClock /> {t('priorisation.urgence_label', "Urgence")} : {item.urgence}</p>
+                  <p><FaUsers /> {t('priorisation.type_label', "Type")} : {item.type}</p>
                 </div>
                 <div className="progress-container">
                   <div className="progress-bar" style={{ width: `${item.score}%` }} />
                 </div>
-                <button className="btn-view">Voir la mission</button>
+                <button className="btn-view">{t('priorisation.btn_voir_mission', "Voir la mission")}</button>
               </div>
             ))}
           </div>
@@ -97,11 +98,11 @@ const Priorisation = () => {
       <section className="priorisation-section">
         <div className="section-title">
           <FaChartLine className="title-icon" />
-          <h2>Campagnes prioritaires (associations)</h2>
+          <h2>{t('priorisation.campagnes_prioritaires', "Campagnes prioritaires (associations)")}</h2>
           <span className="badge">{campagnesFiltrees.length}</span>
         </div>
         {campagnesFiltrees.length === 0 ? (
-          <div className="empty-state">Aucune campagne pour le moment.</div>
+          <div className="empty-state">{t('priorisation.aucune_campagne', "Aucune campagne pour le moment.")}</div>
         ) : (
           <div className="cards-grid">
             {campagnesFiltrees.slice(0, 3).map((item) => (
@@ -112,13 +113,13 @@ const Priorisation = () => {
                 </div>
                 <div className="card-details">
                   <p><FaMapMarkerAlt /> {item.ville}</p>
-                  <p><FaClock /> Urgence : {item.urgence}</p>
-                  <p><FaUsers /> Type : {item.type}</p>
+                  <p><FaClock /> {t('priorisation.urgence_label', "Urgence")} : {item.urgence}</p>
+                  <p><FaUsers /> {t('priorisation.type_label', "Type")} : {item.type}</p>
                 </div>
                 <div className="progress-container">
                   <div className="progress-bar" style={{ width: `${item.score}%` }} />
                 </div>
-                <button className="btn-view">Voir la campagne</button>
+                <button className="btn-view">{t('priorisation.btn_voir_campagne', "Voir la campagne")}</button>
               </div>
             ))}
           </div>

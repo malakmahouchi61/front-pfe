@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { 
   FaHeart, 
   FaHandHoldingHeart, 
@@ -13,6 +14,7 @@ import {
 import "./MatchingDonateur.css";
 
 const MatchingDonateur = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [demandes, setDemandes] = useState([]);
@@ -27,7 +29,7 @@ const MatchingDonateur = () => {
       return;
     }
     if (user.role !== "donateur") {
-      setError("Accès réservé aux donateurs.");
+      setError(t('matching.erreur_acces', "Accès réservé aux donateurs."));
       setLoading(false);
       return;
     }
@@ -36,22 +38,22 @@ const MatchingDonateur = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:3000/api/matching/donateur/${user.id_utilisateur}`, {
+        const res = await fetch(`/api/matching/donateur/${user.id_utilisateur}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (!res.ok) throw new Error("Erreur chargement");
+        if (!res.ok) throw new Error(t('matching.erreur_chargement', "Erreur chargement"));
         const data = await res.json();
         setDemandes(data.demandes || []);
         setCampagnes(data.campagnes || []);
       } catch (err) {
         console.error(err);
-        setError("Impossible de charger les recommandations.");
+        setError(t('matching.erreur_recommandations', "Impossible de charger les recommandations."));
       } finally {
         setLoading(false);
       }
     };
     fetchMatching();
-  }, [user, navigate]);
+  }, [user, navigate, t]);
 
   const filtrerParType = (items, typeField) => {
     if (typeFiltre === "tous") return items;
@@ -66,33 +68,33 @@ const MatchingDonateur = () => {
     return "#ef4444";
   };
 
-  if (loading) return <div className="matching-loading">🔍 Analyse de votre profil...</div>;
+  if (loading) return <div className="matching-loading">{t('matching.analyse_profil', "🔍 Analyse de votre profil...")}</div>;
   if (error) return <div className="matching-error">{error}</div>;
 
   return (
     <div className="matching-container">
       <div className="matching-header">
-        <h1>🤝 Recommandations personnalisées</h1>
-        <p className="subtitle">Basées sur votre ville, vos centres d’intérêt et l’urgence</p>
+        <h1>{t('matching.titre', "🤝 Recommandations personnalisées")}</h1>
+        <p className="subtitle">{t('matching.sous_titre', "Basées sur votre ville, vos centres d’intérêt et l’urgence")}</p>
       </div>
 
       <div className="filters-bar">
         <FaFilter className="filter-icon" />
-        <button className={typeFiltre === "tous" ? "filter-active" : ""} onClick={() => setTypeFiltre("tous")}>Tous</button>
-        <button className={typeFiltre === "financier" ? "filter-active" : ""} onClick={() => setTypeFiltre("financier")}>Financier</button>
-        <button className={typeFiltre === "materiel" ? "filter-active" : ""} onClick={() => setTypeFiltre("materiel")}>Matériel</button>
-        <button className={typeFiltre === "competences" ? "filter-active" : ""} onClick={() => setTypeFiltre("competences")}>Compétences</button>
-        <button className={typeFiltre === "kafala" ? "filter-active" : ""} onClick={() => setTypeFiltre("kafala")}>Kafala</button>
+        <button className={typeFiltre === "tous" ? "filter-active" : ""} onClick={() => setTypeFiltre("tous")}>{t('matching.filtre_tous', "Tous")}</button>
+        <button className={typeFiltre === "financier" ? "filter-active" : ""} onClick={() => setTypeFiltre("financier")}>{t('matching.filtre_financier', "Financier")}</button>
+        <button className={typeFiltre === "materiel" ? "filter-active" : ""} onClick={() => setTypeFiltre("materiel")}>{t('matching.filtre_materiel', "Matériel")}</button>
+        <button className={typeFiltre === "competences" ? "filter-active" : ""} onClick={() => setTypeFiltre("competences")}>{t('matching.filtre_competences', "Compétences")}</button>
+        <button className={typeFiltre === "kafala" ? "filter-active" : ""} onClick={() => setTypeFiltre("kafala")}>{t('matching.filtre_kafala', "Kafala")}</button>
       </div>
 
       <section className="matching-section">
         <div className="section-title">
           <FaHeart className="title-icon" />
-          <h2>Missions solidaires – Bénéficiaires</h2>
+          <h2>{t('matching.missions_solidaires', "Missions solidaires – Bénéficiaires")}</h2>
           <span className="badge">{demandesFiltrees.length}</span>
         </div>
         {demandesFiltrees.length === 0 ? (
-          <div className="empty-state">Aucune mission correspondante</div>
+          <div className="empty-state">{t('matching.aucune_mission', "Aucune mission correspondante")}</div>
         ) : (
           <div className="cards-grid">
             {demandesFiltrees.slice(0, 6).map((item) => (
@@ -105,11 +107,11 @@ const MatchingDonateur = () => {
                 </div>
                 <div className="card-details">
                   <p><FaMapMarkerAlt /> {item.ville}</p>
-                  <p><FaClock /> Urgence : <span className="urgence-value">{item.urgence}</span></p>
-                  <p><FaUsers /> Type : {item.type_demande}</p>
-                  <p><FaStar /> Compatibilité : <strong>{item.score}%</strong></p>
+                  <p><FaClock /> {t('matching.urgence_label', "Urgence")} : <span className="urgence-value">{item.urgence}</span></p>
+                  <p><FaUsers /> {t('matching.type_label', "Type")} : {item.type_demande}</p>
+                  <p><FaStar /> {t('matching.compatibilite_label', "Compatibilité")} : <strong>{item.score}%</strong></p>
                 </div>
-                <button className="btn-action">Voir et aider</button>
+                <button className="btn-action">{t('matching.voir_aider', "Voir et aider")}</button>
               </div>
             ))}
           </div>
@@ -119,11 +121,11 @@ const MatchingDonateur = () => {
       <section className="matching-section">
         <div className="section-title">
           <FaHandHoldingHeart className="title-icon" />
-          <h2>Campagnes associatives</h2>
+          <h2>{t('matching.campagnes_associatives', "Campagnes associatives")}</h2>
           <span className="badge">{campagnesFiltrees.length}</span>
         </div>
         {campagnesFiltrees.length === 0 ? (
-          <div className="empty-state">Aucune campagne correspondante</div>
+          <div className="empty-state">{t('matching.aucune_campagne', "Aucune campagne correspondante")}</div>
         ) : (
           <div className="cards-grid">
             {campagnesFiltrees.slice(0, 6).map((item) => (
@@ -136,11 +138,11 @@ const MatchingDonateur = () => {
                 </div>
                 <div className="card-details">
                   <p><FaMapMarkerAlt /> {item.ville}</p>
-                  <p><FaClock /> Urgence : {item.urgence}</p>
-                  <p><FaUsers /> Type : {item.type_campagne}</p>
-                  <p><FaStar /> Compatibilité : <strong>{item.score}%</strong></p>
+                  <p><FaClock /> {t('matching.urgence_label', "Urgence")} : {item.urgence}</p>
+                  <p><FaUsers /> {t('matching.type_label', "Type")} : {item.type_campagne}</p>
+                  <p><FaStar /> {t('matching.compatibilite_label', "Compatibilité")} : <strong>{item.score}%</strong></p>
                 </div>
-                <button className="btn-action">Voir et soutenir</button>
+                <button className="btn-action">{t('matching.voir_soutenir', "Voir et soutenir")}</button>
               </div>
             ))}
           </div>

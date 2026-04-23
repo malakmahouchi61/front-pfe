@@ -30,8 +30,16 @@ import Priorisation from "./pages/Priorisation";
 import "./App.css";
 
 const AppContent = () => {
-  const { user } = useAuth();
-  const userId = user?.id_utilisateur ?? user?.id ?? null;
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="app-loading">Chargement...</div>;
+  }
+
+  // Récupération robuste de l’ID utilisateur
+  const userId = user?.id_utilisateur ?? user?.id ?? user?.user?.id_utilisateur ?? null;
+
+  console.log("userId dans App :", userId); // À supprimer après test
 
   return (
     <SocketProvider userId={userId}>

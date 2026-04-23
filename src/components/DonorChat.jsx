@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { FiCpu, FiSend, FiLoader, FiMessageSquare } from "react-icons/fi";
 import "./DonorChat.css";
 
 const DonorChat = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([
     {
       role: "bot",
-      text: "Bonjour cher donateur ! Posez-moi toutes vos questions sur les dons, les reçus fiscaux, ou l’impact de votre générosité.",
+      text: t("chat.bienvenue", "Bonjour cher donateur ! Posez-moi toutes vos questions sur les dons, les reçus fiscaux, ou l’impact de votre générosité."),
     },
   ]);
   const [input, setInput] = useState("");
@@ -36,7 +38,7 @@ const DonorChat = () => {
           ...prev,
           {
             role: "bot",
-            text: "Veuillez vous connecter pour utiliser le chat.",
+            text: t("chat.erreur_connexion", "Veuillez vous connecter pour utiliser le chat."),
           },
         ]);
         setLoading(false);
@@ -57,7 +59,7 @@ const DonorChat = () => {
         ...prev,
         {
           role: "bot",
-          text: "Désolé, une erreur est survenue. Réessayez plus tard.",
+          text: t("chat.erreur_serveur", "Désolé, une erreur est survenue. Réessayez plus tard."),
         },
       ]);
     } finally {
@@ -72,8 +74,8 @@ const DonorChat = () => {
           <FiMessageSquare size={22} />
         </div>
         <div className="header-text">
-          <h3>Assistant Donateur</h3>
-          <p>Réponses instantanées sur vos dons, campagnes, et plus</p>
+          <h3>{t("chat.titre", "Assistant Donateur")}</h3>
+          <p>{t("chat.sous_titre", "Réponses instantanées sur vos dons, campagnes, et plus")}</p>
         </div>
       </div>
       <div className="chat-messages">
@@ -92,7 +94,7 @@ const DonorChat = () => {
         {loading && (
           <div className="typing">
             <FiLoader className="spinner" size={14} />
-            <span>L'assistant écrit...</span>
+            <span>{t("chat.typing", "L'assistant écrit...")}</span>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -101,7 +103,7 @@ const DonorChat = () => {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Écrivez votre message... (ex: comment faire un don matériel ?)"
+          placeholder={t("chat.placeholder", "Écrivez votre message... (ex: comment faire un don matériel ?)")}
           rows="1"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -112,7 +114,7 @@ const DonorChat = () => {
         />
         <button onClick={sendMessage} disabled={loading}>
           <FiSend size={16} />
-          <span>Envoyer</span>
+          <span>{t("chat.btn_envoyer", "Envoyer")}</span>
         </button>
       </div>
     </div>

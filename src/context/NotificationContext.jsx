@@ -5,6 +5,7 @@ const NotificationContext = createContext();
 
 export const useNotifications = () => useContext(NotificationContext);
 
+// URL de l’API backend (ajustez si besoin)
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 
 export const NotificationProvider = ({ children, userId }) => {
@@ -12,8 +13,9 @@ export const NotificationProvider = ({ children, userId }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const isMounted = useRef(true);
+  // const refreshInterval = useRef(null);
 
-  // Helper icône
+  // Icône selon le type de notification
   const getIconForType = (type) => {
     switch (type) {
       case "donation": return "💰";
@@ -24,16 +26,26 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   };
 
+  // Chargement des notifications depuis l’API
   const fetchNotifications = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      console.log("NotificationProvider: userId manquant, pas de chargement");
+      return;
+    }
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
+      console.log("🚀 ~ NotificationProvider ~ token:",`${API_URL}/notifications/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 100 },
+      })
       const res = await axios.get(`${API_URL}/notifications/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 100 },
       });
+      console.log("🚀 ~ NotificationProvider ~ res:", res)
       if (!isMounted.current) return;
+
       const data = res.data.notifications;
       const formatted = data.map((n) => ({
         id: n.id_notification,
@@ -45,6 +57,7 @@ export const NotificationProvider = ({ children, userId }) => {
         icon: getIconForType(n.type),
         data: n.data,
       }));
+
       setNotifications(formatted);
       const unread = formatted.filter((n) => !n.read).length;
       setUnreadCount(unread);
@@ -55,12 +68,26 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   }, [userId]);
 
+  // Rafraîchissement automatique toutes les 30 secondes
+  // useEffect(() => {
+  //   if (userId) {
+  //     fetchNotifications();
+  //     refreshInterval.current = setInterval(() => {
+  //       fetchNotifications();
+  //     }, 30000);
+  //   }
+  //   return () => {
+  //     if (refreshInterval.current) clearInterval(refreshInterval.current);
+  //   };
+  // }, [userId, fetchNotifications]);
+
+  // Nettoyage au démontage
   useEffect(() => {
     isMounted.current = true;
-    fetchNotifications();
     return () => { isMounted.current = false; };
-  }, [fetchNotifications]);
+  }, []);
 
+  // Ajouter une notification (utilisé par les events socket)
   const addNotification = useCallback((notification) => {
     setNotifications((prev) => {
       if (prev.some((n) => n.id === notification.id)) return prev;
@@ -71,6 +98,7 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   }, []);
 
+  // Marquer une notification comme lue
   const markAsRead = useCallback(async (id) => {
     try {
       const token = localStorage.getItem("token");
@@ -86,6 +114,7 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   }, []);
 
+  // Tout marquer comme lu
   const markAllAsRead = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
@@ -99,10 +128,16 @@ export const NotificationProvider = ({ children, userId }) => {
     }
   }, []);
 
+  // Effacer toutes les notifications (local)
   const clearNotifications = useCallback(() => {
     setNotifications([]);
     setUnreadCount(0);
   }, []);
+
+  // // Forcer un rafraîchissement manuel
+  // const refresh = useCallback(() => {
+  //   fetchNotifications();
+  // }, [fetchNotifications]);
 
   return (
     <NotificationContext.Provider
@@ -114,7 +149,7 @@ export const NotificationProvider = ({ children, userId }) => {
         markAsRead,
         markAllAsRead,
         clearNotifications,
-        refresh: fetchNotifications,
+    refresh: fetchNotifications,
       }}
     >
       {children}
